@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "_macros.html" import logo, vacancy_card, empty with context %}
+{% block title %}{{ company.name }}{% endblock %}
+{% block content %}
+<div class="container" style="padding-bottom:60px">
+  <div class="page-head">
+    <div class="breadcrumb reveal"><a href="{{ url_for('main.companies') }}">{{ _('Компаниялар') }}</a><span>/</span><span>{{ company.name }}</span></div>
+  </div>
+  <div class="card reveal" style="margin-bottom:28px">
+    <div class="detail-hero">
+      {{ logo(company, 'lg') }}
+      <div style="flex:1;min-width:220px">
+        <h1>{{ company.name }}</h1>
+        <div class="tags">
+          <span class="tag"><i class="bi bi-tag"></i>{{ company.industry }}</span>
+          <span class="tag"><i class="bi bi-geo-alt"></i>{{ company.city }}</span>
+          {% if company.website %}<a class="tag" href="{{ company.website }}" target="_blank" rel="noopener noreferrer"><i class="bi bi-globe2"></i>{{ _('Веб-сайт') }}</a>{% endif %}
+          {% if company.email %}<span class="tag"><i class="bi bi-envelope"></i>{{ company.email }}</span>{% endif %}
+        </div>
+      </div>
+      {% if current_user.is_authenticated and current_user.is_admin %}
+        <a class="btn" href="{{ url_for('admin.company_edit', company_id=company.id) }}"><i class="bi bi-pencil"></i> {{ _('Өңдеу') }}</a>
+      {% endif %}
+    </div>
+    <p class="muted" style="margin:20px 0 0;white-space:pre-line">{{ company.description }}</p>
+  </div>
+
+  <h2 class="reveal">{{ _('Ашық вакансиялар') }} <span class="muted">({{ items|length }})</span></h2>
+  {% if items %}
+    <div class="grid grid-3" data-stagger>{% for v in items %}{{ vacancy_card(v) }}{% endfor %}</div>
+  {% else %}
+    {{ empty('briefcase', _('Ашық вакансия жоқ'), _('Бұл компанияда қазір ашық позиция жоқ.')) }}
+  {% endif %}
+</div>
+{% endblock %}

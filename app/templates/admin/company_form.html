@@ -1,0 +1,27 @@
+{% extends "admin/_layout.html" %}
+{% from "_macros.html" import field with context %}
+{% block title %}{{ _('Компанияны өңдеу') if company else _('Жаңа компания') }}{% endblock %}
+{% block admin_content %}
+<div class="admin-head reveal">
+  <div>
+    <div class="breadcrumb"><a href="{{ url_for('admin.companies') }}">{{ _('Компаниялар') }}</a><span>/</span><span>{{ company.name if company else _('Жаңа компания') }}</span></div>
+    <h1>{{ _('Компанияны өңдеу') if company else _('Жаңа компания') }}</h1>
+  </div>
+</div>
+<form class="card reveal" method="post" novalidate>
+  {{ form.hidden_tag() }}
+  <div class="form-grid">
+    {{ field(form.name, placeholder='Steppe Soft', maxlength=100) }}
+    {{ field(form.industry, icon='tag', placeholder=_('IT, Финтех, Логистика...'), maxlength=60) }}
+    {{ field(form.city, icon='geo-alt', placeholder='Астана', maxlength=60) }}
+    {{ field(form.website, icon='globe2', placeholder='https://example.kz') }}
+    {{ field(form.email, icon='envelope', placeholder='hr@example.kz') }}
+    {{ field(form.phone, icon='telephone', placeholder='+7 727 300 00 00') }}
+    {{ field(form.description, cls='full', placeholder=_('Компания туралы қысқаша...'), maxlength=3000, attrs={'rows': 6}) }}
+  </div>
+  <div class="form-actions">
+    <a class="btn" href="{{ url_for('admin.companies') }}">{{ _('Болдырмау') }}</a>
+    <button class="btn btn-primary" type="submit"><i class="bi bi-check2"></i> {{ _('Сақтау') }}</button>
+  </div>
+</form>
+{% endblock %}

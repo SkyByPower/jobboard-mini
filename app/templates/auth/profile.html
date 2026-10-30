@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Профиль') }}{% endblock %}
+{% block content %}
+<div class="container" style="padding:34px 0 60px">
+  <div class="card reveal" style="margin-bottom:22px">
+    <div class="profile-head">
+      <span class="avatar lg">{{ current_user.initials }}</span>
+      <div style="flex:1;min-width:200px">
+        <h1 style="font-size:1.7rem;margin-bottom:4px">{{ current_user.full_name }}</h1>
+        <span class="badge role-{{ current_user.role }}">{{ _('Әкімші') if current_user.is_admin else _('Пайдаланушы') }}</span>
+        <span class="small muted" style="margin-left:8px">@{{ current_user.username }} · {{ _('{date} бастап', date=current_user.created_at|date) }}</span>
+      </div>
+      {% if current_user.is_admin %}
+        <a class="btn btn-primary" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2"></i> {{ _('Басқару тақтасы') }}</a>
+      {% else %}
+        <a class="btn btn-primary" href="{{ url_for('main.my_applications') }}"><i class="bi bi-send"></i> {{ _('Өтініштерім') }}</a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if not current_user.is_admin %}
+  <div class="stats" data-stagger style="margin-top:0">
+    {% set colors = {'pending': '#f5a524', 'reviewing': '#3b82f6', 'accepted': '#12b981', 'rejected': '#f0466b'} %}
+    {% set icons = {'pending': 'hourglass', 'reviewing': 'eye', 'accepted': 'check2-circle', 'rejected': 'x-circle'} %}
+    {% for key, label in STATUSES.items() %}
+      <a class="stat reveal" style="--c:{{ colors[key] }};color:inherit" href="{{ url_for('main.my_applications', status=key) }}">
+        <div class="ico"><i class="bi bi-{{ icons[key] }}"></i></div>
+        <div class="num" data-count="{{ stats[key] }}">0</div><div class="lbl">{{ _(label) }}</div>
+      </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="grid grid-2" style="margin-top:22px" data-stagger>
+    <div class="card reveal">
+      <h3><i class="bi bi-person-vcard"></i> {{ _('Жеке деректер') }}</h3>
+      <dl class="kv">
+        <dt>Email</dt><dd>{{ current_user.email }}</dd>
+        <dt>{{ _('Телефон') }}</dt><dd>{{ current_user.phone or '—' }}</dd>
+        <dt>{{ _('Логин') }}</dt><dd>{{ current_user.username }}</dd>
+        <dt>{{ _('Рөл') }}</dt><dd>{{ current_user.role }}</dd>
+      </dl>
+    </div>
+    <div class="card reveal">
+      <h3><i class="bi bi-key"></i> {{ _('API токен') }}</h3>
+      <p class="muted small">{{ _('REST API-ге сұраныс жіберу үшін <code>X-API-Key</code> тақырыбында қолданыңыз.')|safe }}</p>
+      <div class="token-box">
+        <code class="mono">{{ current_user.api_token }}</code>
+        <button class="icon-btn" type="button" data-copy="{{ current_user.api_token }}" aria-label="{{ _('Көшіру') }}"><i class="bi bi-clipboard"></i></button>
+      </div>
+      <form action="{{ url_for('auth.regenerate_token') }}" method="post" style="margin-top:14px" data-confirm="{{ _('Ескі токен жарамсыз болады.') }}" data-confirm-title="{{ _('Жаңа токен жасау керек пе?') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-sm" type="submit"><i class="bi bi-arrow-repeat"></i> {{ _('Жаңарту') }}</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

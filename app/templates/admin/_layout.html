@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+{% set ep = request.endpoint or '' %}
+<div class="container admin">
+  <aside class="card side-nav reveal from-left">
+    <div class="label">{{ _('Басқару') }}</div>
+    <a href="{{ url_for('admin.dashboard') }}" class="{{ 'active' if ep == 'admin.dashboard' }}"><i class="bi bi-speedometer2"></i>{{ _('Тақта') }}</a>
+    <a href="{{ url_for('admin.vacancies') }}" class="{{ 'active' if ep.startswith('admin.vacanc') }}"><i class="bi bi-briefcase"></i>{{ _('Вакансиялар') }}</a>
+    <a href="{{ url_for('admin.companies') }}" class="{{ 'active' if ep.startswith('admin.compan') }}"><i class="bi bi-buildings"></i>{{ _('Компаниялар') }}</a>
+    <a href="{{ url_for('admin.applications') }}" class="{{ 'active' if ep.startswith('admin.application') }}"><i class="bi bi-inbox"></i>{{ _('Өтініштер') }}
+      {% if pending_count %}<span class="cnt">{{ pending_count }}</span>{% endif %}</a>
+    <a href="{{ url_for('admin.users') }}" class="{{ 'active' if ep.startswith('admin.user') }}"><i class="bi bi-people"></i>{{ _('Пайдаланушылар') }}</a>
+    <div class="label" style="margin-top:10px">{{ _('Жылдам') }}</div>
+    <a href="{{ url_for('admin.vacancy_create') }}"><i class="bi bi-plus-circle"></i>{{ _('Жаңа вакансия') }}</a>
+    <a href="{{ url_for('admin.company_create') }}"><i class="bi bi-building-add"></i>{{ _('Жаңа компания') }}</a>
+  </aside>
+  <section>
+    {% block admin_content %}{% endblock %}
+  </section>
+</div>
+{% endblock %}

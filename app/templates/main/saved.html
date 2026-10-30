@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "_macros.html" import vacancy_card, empty with context %}
+{% block title %}{{ _('Сақталғандар') }}{% endblock %}
+{% block content %}
+<div class="container" style="padding-bottom:60px">
+  <div class="page-head reveal">
+    <h1>{{ _('Сақталған') }} <span class="grad-text">{{ _('вакансиялар') }}</span></h1>
+    <p class="muted">{{ _('Кейінірек қарау үшін белгіленген ұсыныстар.') }}</p>
+  </div>
+  {% if items %}
+    <div class="grid grid-3" data-stagger style="margin-top:20px">{% for v in items %}{{ vacancy_card(v) }}{% endfor %}</div>
+  {% else %}
+    {{ empty('heart', _('Әзірге бос'), _('Вакансия карточкасындағы ♥ батырмасын басып сақтаңыз.'), url_for('main.vacancies'), _('Вакансияларды қарау')) }}
+  {% endif %}
+</div>
+{% endblock %}

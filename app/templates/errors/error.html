@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ code }} — {{ title }}{% endblock %}
+{% block main_class %}error-page{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="error-code" aria-hidden="true">{% for ch in code|string %}<span>{{ ch }}</span>{% endfor %}</div>
+  <h1 style="font-size:clamp(1.5rem,3vw,2.2rem)" class="reveal">{{ title }}</h1>
+  <p class="muted reveal" style="max-width:460px;margin:0 auto 26px">{{ message }}</p>
+  <div class="reveal" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <a class="btn btn-primary" href="{{ url_for('main.index') }}"><i class="bi bi-house"></i> {{ _('Басты бет') }}</a>
+    <a class="btn" href="{{ url_for('main.vacancies') }}"><i class="bi bi-briefcase"></i> {{ _('Вакансиялар') }}</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from "_macros.html" import logo, empty with context %}
+{% block title %}{{ _('Компаниялар') }}{% endblock %}
+{% block content %}
+<div class="container" style="padding-bottom:60px">
+  <div class="section-head page-head">
+    <div class="reveal from-left">
+      <h1>{{ _('Жұмыс') }} <span class="grad-text">{{ _('берушілер') }}</span></h1>
+      <p>{{ _('Платформадағы компаниялар және олардың ашық вакансиялары.') }}</p>
+    </div>
+    <form class="search-inline reveal" method="get">
+      <div class="input-icon"><i class="bi bi-search"></i><input type="search" name="q" value="{{ q }}" placeholder="{{ _('Атауы немесе сала...') }}" maxlength="100" style="width:100%"></div>
+      <button class="btn btn-primary" type="submit">{{ _('Іздеу') }}</button>
+    </form>
+  </div>
+
+  {% if companies %}
+  <div class="grid grid-3" data-stagger>
+    {% for c in companies %}
+    <article class="card spotlight company reveal">
+      <div class="top">
+        {{ logo(c) }}
+        <div>
+          <h3><a href="{{ url_for('main.company_detail', company_id=c.id) }}">{{ c.name }}</a></h3>
+          <div class="small muted">{{ c.industry }}</div>
+        </div>
+      </div>
+      <p>{{ c.description }}</p>
+      <div class="foot">
+        <span><i class="bi bi-geo-alt"></i> {{ c.city }}</span>
+        <span>{{ _('{n} ашық вакансия', n='<b>%d</b>'|format(c.active_vacancies_count))|safe }} <i class="bi bi-arrow-right"></i></span>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+    {{ empty('buildings', _('Компания табылмады'), _('Басқа сөзбен іздеп көріңіз.'), url_for('main.companies'), _('Барлығын көрсету')) }}
+  {% endif %}
+</div>
+{% endblock %}

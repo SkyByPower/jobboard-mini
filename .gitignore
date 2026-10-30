@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Құпия кілттер
+.env
+
+# Деректер қоры және жүктелген файлдар
+instance/
+*.db
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Локальные настройки редактора / Claude
+.claude/

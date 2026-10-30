@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field with context %}
+{% block title %}{{ _('Кіру') }}{% endblock %}
+{% block main_class %}auth-wrap{% endblock %}
+{% block content %}
+<div class="container" style="display:grid;place-items:center">
+  <div class="card auth-card reveal zoom">
+    <div class="auth-icon"><i class="bi bi-box-arrow-in-right"></i></div>
+    <h1>{{ _('Қайта') }} <span class="grad-text">{{ _('қош келдіңіз') }}</span></h1>
+    <p class="sub">{{ _('Аккаунтыңызға кіріңіз') }}</p>
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <div style="display:grid;gap:16px">
+        {{ field(form.login, icon='person', placeholder=_('admin немесе email@mail.kz')) }}
+        {{ field(form.password, icon='lock', placeholder='••••••••') }}
+        {{ field(form.remember) }}
+        <button class="btn btn-primary btn-lg btn-block" type="submit">{{ _('Кіру') }} <i class="bi bi-arrow-right"></i></button>
+      </div>
+    </form>
+    <div class="demo-accounts">
+      <div class="muted" style="margin-bottom:6px"><i class="bi bi-magic"></i> {{ _('Демо аккаунттар (басып толтырыңыз):') }}</div>
+      <button type="button" data-demo="admin:admin123"><i class="bi bi-shield-lock"></i> admin / admin123 — {{ _('әкімші') }}</button>
+      <button type="button" data-demo="aruzhan:user123"><i class="bi bi-person"></i> aruzhan / user123 — {{ _('пайдаланушы') }}</button>
+    </div>
+    <p class="divider">{{ _('Аккаунтыңыз жоқ па?') }} <a href="{{ url_for('auth.register') }}">{{ _('Тіркелу') }}</a></p>
+  </div>
+</div>
+{% endblock %}

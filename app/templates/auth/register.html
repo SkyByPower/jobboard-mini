@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field with context %}
+{% block title %}{{ _('Тіркелу') }}{% endblock %}
+{% block main_class %}auth-wrap{% endblock %}
+{% block content %}
+<div class="container" style="display:grid;place-items:center">
+  <div class="card auth-card wide reveal zoom">
+    <div class="auth-icon"><i class="bi bi-person-plus"></i></div>
+    <h1>{{ _('Аккаунт') }} <span class="grad-text">{{ _('құру') }}</span></h1>
+    <p class="sub">{{ _('Тіркеліп, вакансияларға өтініш жіберіңіз') }}</p>
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="form-grid">
+        {{ field(form.full_name, icon='person-badge', placeholder=_('Аружан Серікова'), cls='full', maxlength=80) }}
+        {{ field(form.username, icon='at', placeholder='aruzhan_s', hint=_('Латын әріптері, сандар, _ және .'), maxlength=30) }}
+        {{ field(form.email, icon='envelope', placeholder='name@mail.kz') }}
+        {{ field(form.phone, icon='telephone', placeholder='+7 700 123 45 67', cls='full', hint=_('Міндетті емес')) }}
+        <div class="field {{ 'has-error' if form.password.errors }}">
+          <label for="password">{{ form.password.label.text }}<span class="req">*</span></label>
+          <div class="input-icon"><i class="bi bi-lock"></i>{{ form.password(placeholder=_('Кемінде 6 таңба'), **{'data-strength': '1'}) }}<button type="button" class="pw-toggle" aria-label="{{ _('Көрсету') }}"><i class="bi bi-eye"></i></button></div>
+          <div class="pw-meter"><span></span></div>
+          {% for e in form.password.errors %}<span class="error"><i class="bi bi-exclamation-circle"></i>{{ e }}</span>{% endfor %}
+        </div>
+        {{ field(form.confirm, icon='shield-check', placeholder=_('Қайталаңыз')) }}
+      </div>
+      <button class="btn btn-primary btn-lg btn-block" style="margin-top:22px" type="submit">{{ _('Тіркелу') }} <i class="bi bi-rocket-takeoff"></i></button>
+    </form>
+    <p class="divider">{{ _('Аккаунтыңыз бар ма?') }} <a href="{{ url_for('auth.login') }}">{{ _('Кіру') }}</a></p>
+  </div>
+</div>
+{% endblock %}

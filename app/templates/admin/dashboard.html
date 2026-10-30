@@ -1,0 +1,66 @@
+{% extends "admin/_layout.html" %}
+{% from "_macros.html" import status_badge, logo with context %}
+{% block title %}{{ _('Басқару тақтасы') }}{% endblock %}
+{% block admin_content %}
+<div class="admin-head reveal">
+  <div>
+    <h1>{{ _('Сәлем,') }} <span class="grad-text">{{ current_user.full_name.split()[0] }}</span> 👋</h1>
+    <p class="muted" style="margin:4px 0 0">{{ _('Платформаның жалпы көрінісі') }}</p>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('admin.vacancy_create') }}"><i class="bi bi-plus-lg"></i> {{ _('Вакансия қосу') }}</a>
+</div>
+
+<div class="stats" data-stagger style="margin-top:0">
+  <div class="stat reveal" style="--c:#6c4cff"><div class="ico"><i class="bi bi-briefcase"></i></div><div class="num" data-count="{{ stats.vacancies }}">0</div><div class="lbl">{{ _('Вакансия ({n} белсенді)', n=stats.active) }}</div></div>
+  <div class="stat reveal" style="--c:#10c9b4"><div class="ico"><i class="bi bi-buildings"></i></div><div class="num" data-count="{{ stats.companies }}">0</div><div class="lbl">{{ _p('stat', 'Компания') }}</div></div>
+  <div class="stat reveal" style="--c:#ff7aa8"><div class="ico"><i class="bi bi-inbox"></i></div><div class="num" data-count="{{ stats.applications }}">0</div><div class="lbl">{{ _('Өтініш') }}</div></div>
+  <div class="stat reveal" style="--c:#f5a524"><div class="ico"><i class="bi bi-people"></i></div><div class="num" data-count="{{ stats.users }}">0</div><div class="lbl">{{ _p('stat', 'Пайдаланушы') }}</div></div>
+</div>
+
+{% set total = stats.applications or 1 %}
+{% set s = stats.by_status %}
+<div class="grid grid-2" style="margin-top:20px" data-stagger>
+  <div class="card reveal">
+    <div class="card-title"><h3>{{ _('Өтініштер мәртебесі') }}</h3><a class="small" href="{{ url_for('admin.applications') }}">{{ _('Барлығы') }} →</a></div>
+    <div class="donut-wrap">
+      <div class="donut" style="--p1:{{ s.pending * 100 / total }};--p2:{{ s.reviewing * 100 / total }};--p3:{{ s.accepted * 100 / total }}"></div>
+      <div class="donut-center"><div><b>{{ stats.applications }}</b><span class="small muted">{{ _('барлығы') }}</span></div></div>
+    </div>
+    <div class="legend">
+      {% set colors = {'pending': '#f5a524', 'reviewing': '#3b82f6', 'accepted': '#12b981', 'rejected': '#f0466b'} %}
+      {% for key, label in STATUSES.items() %}<span><i style="background:{{ colors[key] }}"></i>{{ _(label) }} — {{ s[key] }}</span>{% endfor %}
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title"><h3>{{ _('Ең танымал вакансиялар') }}</h3></div>
+    {% set max_n = (top[0].n if top and top[0].n else 1) %}
+    <div class="status-bars">
+      {% for v, n in top %}
+        <div class="sbar">
+          <div class="row"><a href="{{ url_for('admin.applications', vacancy=v.id) }}" style="color:var(--text)">{{ v.title }}</a><b>{{ n }}</b></div>
+          <div class="track"><span data-width="{{ (n * 100 / max_n)|round }}%" style="background:linear-gradient(90deg, hsl({{ v.company.hue }} 80% 60%), hsl({{ v.company.hue + 50 }} 80% 55%))"></span></div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="card reveal" style="margin-top:20px">
+  <div class="card-title"><h3>{{ _('Соңғы өтініштер') }}</h3><a class="btn btn-sm" href="{{ url_for('admin.applications', status='pending') }}">{{ _('Күтудегілер') }}</a></div>
+  <div class="feed">
+    {% for a in recent %}
+      <a href="{{ url_for('admin.application_review', app_id=a.id) }}">
+        <span class="avatar">{{ a.user.initials }}</span>
+        <div class="grow">
+          <div><b>{{ a.user.full_name }}</b> <span class="muted">→ {{ a.vacancy.title }}</span></div>
+          <div class="small faint">{{ a.created_at|ago }}</div>
+        </div>
+        {{ status_badge(a) }}
+      </a>
+    {% else %}
+      <p class="muted">{{ _('Әзірге өтініш жоқ.') }}</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

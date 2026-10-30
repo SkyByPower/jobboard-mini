@@ -1,0 +1,65 @@
+{% extends "admin/_layout.html" %}
+{% from "_macros.html" import field, status_badge, logo with context %}
+{% block title %}{{ _('Өтінішті қарау') }}{% endblock %}
+{% block admin_content %}
+{% set a = application %}
+<div class="admin-head reveal">
+  <div>
+    <div class="breadcrumb"><a href="{{ url_for('admin.applications') }}">{{ _('Өтініштер') }}</a><span>/</span><span>#{{ a.id }}</span></div>
+    <h1>{{ _('Өтінішті қарау') }}</h1>
+  </div>
+  {{ status_badge(a) }}
+</div>
+
+<div class="grid grid-2" data-stagger>
+  <div class="card reveal">
+    <div class="profile-head" style="margin-bottom:18px">
+      <span class="avatar lg">{{ a.user.initials }}</span>
+      <div><h3 style="margin:0">{{ a.user.full_name }}</h3><span class="muted small">@{{ a.user.username }}</span></div>
+    </div>
+    <dl class="kv">
+      <dt>Email</dt><dd><a href="mailto:{{ a.user.email }}">{{ a.user.email }}</a></dd>
+      <dt>{{ _('Телефон') }}</dt><dd>{{ a.phone }}</dd>
+      <dt>{{ _('Күтілетін жалақы') }}</dt><dd>{{ ('{:,}'.format(a.expected_salary).replace(',', ' ') ~ ' ₸') if a.expected_salary else '—' }}</dd>
+      <dt>{{ _('Жіберілді') }}</dt><dd>{{ a.created_at|date('%d.%m.%Y %H:%M') }}</dd>
+    </dl>
+    <h3 style="margin-top:22px">{{ _('Ілеспе хат') }}</h3>
+    <div class="note-box" style="white-space:pre-line">{{ a.cover_letter }}</div>
+    <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap">
+      <a class="btn btn-primary" href="{{ url_for('main.download_cv', app_id=a.id) }}" target="_blank" rel="noopener"><i class="bi bi-file-earmark-pdf"></i> {{ _('CV ашу') }}</a>
+      <a class="btn" href="{{ url_for('main.download_cv', app_id=a.id, download=1) }}"><i class="bi bi-download"></i> {{ a.cv_original_name }}</a>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div class="card reveal">
+      <div style="display:flex;gap:12px;align-items:center">
+        {{ logo(a.vacancy.company) }}
+        <div><a class="job-title" href="{{ url_for('main.vacancy_detail', vacancy_id=a.vacancy.id) }}">{{ a.vacancy.title }}</a><div class="small muted">{{ a.vacancy.company.name }} · {{ a.vacancy.salary_label }}</div></div>
+      </div>
+    </div>
+
+    <form class="card reveal" method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <h3><i class="bi bi-clipboard-check"></i> {{ _('Шешім') }}</h3>
+      <div style="display:grid;gap:14px">
+        {{ field(form.status) }}
+        {{ field(form.admin_note, placeholder=_('Мысалы: Сұхбатқа шақырамыз, 15:00...'), maxlength=1000, attrs={'rows': 4}) }}
+      </div>
+      <div class="form-actions">
+        <a class="btn" href="{{ url_for('admin.applications') }}">{{ _('Артқа') }}</a>
+        <button class="btn btn-primary" type="submit"><i class="bi bi-check2"></i> {{ _('Сақтау') }}</button>
+      </div>
+    </form>
+
+    <div class="card reveal">
+      <h3>{{ _('Жол картасы') }}</h3>
+      {% set order = ['pending', 'reviewing', 'accepted' if a.status != 'rejected' else 'rejected'] %}
+      {% set idx = order.index(a.status) if a.status in order else 0 %}
+      <ul class="timeline">
+        {% for st in order %}<li class="{{ 'done' if loop.index0 <= idx }}"><b>{{ _(STATUSES[st]) }}</b></li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

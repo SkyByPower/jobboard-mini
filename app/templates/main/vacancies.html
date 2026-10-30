@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% from "_macros.html" import vacancy_card, pagination as pager, empty with context %}
+{% block title %}{{ _('Вакансиялар') }}{% endblock %}
+{% block content %}
+{% set a = request.args %}
+<div class="container">
+  <div class="page-head reveal">
+    <h1>{{ _('Барлық') }} <span class="grad-text">{{ _('вакансиялар') }}</span></h1>
+    <p class="muted">{{ _('Іздеу, сүзгі және сұрыптау арқылы өзіңізге лайықты жұмысты табыңыз.') }}</p>
+  </div>
+
+  <form id="filterForm" method="get" action="{{ url_for('main.vacancies') }}" data-autosubmit>
+    <div class="search-bar reveal" style="max-width:none;margin:14px 0 26px">
+      <label class="seg"><i class="bi bi-search"></i><input name="q" value="{{ a.get('q', '') }}" placeholder="{{ _('Лауазым, сипаттама немесе компания...') }}" maxlength="100" aria-label="{{ _('Іздеу') }}"></label>
+      <label class="seg" style="flex:.5"><i class="bi bi-geo-alt"></i>
+        <select name="city" aria-label="{{ _('Қала') }}">
+          <option value="">{{ _('Барлық қала') }}</option>
+          {% for c in cities %}<option {{ 'selected' if a.get('city') == c }}>{{ c }}</option>{% endfor %}
+        </select>
+      </label>
+      <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i> {{ _('Іздеу') }}</button>
+    </div>
+  </form>
+
+    <div class="layout">
+      <aside class="filters">
+        <div class="card reveal from-left">
+          <h4>{{ _('Жұмыс түрі') }}</h4>
+          {% for key, label in EMPLOYMENT_TYPES.items() %}
+            <label class="chk"><input form="filterForm" type="checkbox" name="type" value="{{ key }}" {{ 'checked' if key in selected_types }}> {{ _(label) }}</label>
+          {% endfor %}
+        </div>
+        <div class="card reveal from-left" style="--i:1">
+          <h4>{{ _('Тәжірибе') }}</h4>
+          <div class="field">
+            <select form="filterForm" name="experience" aria-label="{{ _('Тәжірибе') }}">
+              <option value="">{{ _('Кез келген') }}</option>
+              {% for key, label in EXPERIENCE_LEVELS.items() %}<option value="{{ key }}" {{ 'selected' if a.get('experience') == key }}>{{ _(label) }}</option>{% endfor %}
+            </select>
+          </div>
+          <h4 style="margin-top:18px">{{ _('Компания') }}</h4>
+          <div class="field">
+            <select form="filterForm" name="company" aria-label="{{ _('Компания') }}">
+              <option value="">{{ _('Барлығы') }}</option>
+              {% for c in companies %}<option value="{{ c.id }}" {{ 'selected' if a.get('company') == c.id|string }}>{{ c.name }}</option>{% endfor %}
+            </select>
+          </div>
+          <h4 style="margin-top:18px">{{ _('Жалақы (кемінде, ₸)') }}</h4>
+          <div class="field">
+            <input form="filterForm" type="number" name="salary_from" min="0" max="10000000" step="50000" value="{{ a.get('salary_from', '') }}" placeholder="{{ _('мысалы, 400000') }}">
+          </div>
+          <input form="filterForm" type="hidden" name="sort" value="{{ current_sort }}">
+          <div style="display:flex;gap:8px;margin-top:18px">
+            <button form="filterForm" class="btn btn-primary btn-sm" style="flex:1" type="submit">{{ _('Қолдану') }}</button>
+            <a class="btn btn-sm" href="{{ url_for('main.vacancies') }}">{{ _('Тазалау') }}</a>
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="toolbar reveal">
+          <div class="count">{{ _('{n} вакансия табылды', n='<b>%d</b>'|format(pagination.total))|safe }}</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <button class="btn btn-sm filter-toggle" type="button"><i class="bi bi-sliders"></i> {{ _('Сүзгі') }}</button>
+            <div class="seg-control" role="group" aria-label="{{ _('Сұрыптау') }}">
+              {% for key, label in sorts.items() %}
+                <a class="{{ 'on' if current_sort == key }}" href="{{ sort_url(key) }}">{{ label }}</a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        {% set chips = [] %}
+        {% if a.get('q') %}{% set x_ = chips.append('«' ~ a.get('q') ~ '»') %}{% endif %}
+        {% if a.get('city') %}{% set x_ = chips.append(a.get('city')) %}{% endif %}
+        {% for t in selected_types %}{% if t in EMPLOYMENT_TYPES %}{% set x_ = chips.append(_(EMPLOYMENT_TYPES[t])) %}{% endif %}{% endfor %}
+        {% if a.get('experience') in EXPERIENCE_LEVELS %}{% set x_ = chips.append(_(EXPERIENCE_LEVELS[a.get('experience')])) %}{% endif %}
+        {% if a.get('salary_from') %}{% set x_ = chips.append(_('{n} ₸-ден', n=a.get('salary_from'))) %}{% endif %}
+        {% if chips %}
+          <div class="chips">
+            {% for label in chips %}<span class="chip">{{ label }}</span>{% endfor %}
+            <a class="chip" style="background:var(--surface-2);color:var(--muted)" href="{{ url_for('main.vacancies') }}">{{ _('Барлығын тазалау') }} <i class="bi bi-x"></i></a>
+          </div>
+        {% endif %}
+
+        {% if pagination.items %}
+          <div class="grid grid-2" data-stagger>
+            {% for v in pagination.items %}{{ vacancy_card(v) }}{% endfor %}
+          </div>
+          {{ pager(pagination) }}
+        {% else %}
+          {{ empty('search', _('Ештеңе табылмады'), _('Сүзгі шарттарын өзгертіп көріңіз.'), url_for('main.vacancies'), _('Сүзгіні тазалау')) }}
+        {% endif %}
+      </section>
+    </div>
+</div>
+{% endblock %}

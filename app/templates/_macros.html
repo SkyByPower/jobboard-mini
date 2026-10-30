@@ -1,0 +1,101 @@
+{# ---------------------------------------------------------------- форма өрісі #}
+{% macro field(f, icon=None, hint=None, cls='', placeholder='', maxlength=None, attrs={}) %}
+  <div class="field {{ cls }} {{ 'has-error' if f.errors }}">
+    {% if f.type == 'BooleanField' %}
+      <label class="switch">{{ f(**attrs) }} {{ f.label.text }}</label>
+    {% else %}
+      <label for="{{ f.id }}">{{ f.label.text }}{% if f.flags.required %}<span class="req">*</span>{% endif %}</label>
+      {% set kw = dict(attrs, placeholder=placeholder) %}
+      {% if maxlength %}{% set x_ = kw.update({'maxlength': maxlength}) %}{% endif %}
+      {% if icon %}
+        <div class="input-icon">
+          <i class="bi bi-{{ icon }}"></i>
+          {{ f(**kw) }}
+          {% if f.type == 'PasswordField' %}<button type="button" class="pw-toggle" aria-label="{{ _('Көрсету') }}"><i class="bi bi-eye"></i></button>{% endif %}
+        </div>
+      {% else %}
+        {{ f(**kw) }}
+      {% endif %}
+    {% endif %}
+    {% if hint %}<span class="hint">{{ hint }}</span>{% endif %}
+    {% for e in f.errors %}<span class="error"><i class="bi bi-exclamation-circle"></i>{{ e }}</span>{% endfor %}
+  </div>
+{% endmacro %}
+
+{# ---------------------------------------------------------------- пагинация #}
+{% macro pagination(p) %}
+  {% if p.pages > 1 %}
+  <nav class="pagination" aria-label="{{ _('Беттер') }}">
+    {% if p.has_prev %}<a href="{{ page_url(p.prev_num) }}" aria-label="{{ _('Алдыңғы') }}"><i class="bi bi-chevron-left"></i></a>
+    {% else %}<span class="disabled"><i class="bi bi-chevron-left"></i></span>{% endif %}
+    {% for n in p.iter_pages(left_edge=1, left_current=1, right_current=2, right_edge=1) %}
+      {% if n %}
+        {% if n == p.page %}<span class="current" aria-current="page">{{ n }}</span>
+        {% else %}<a href="{{ page_url(n) }}">{{ n }}</a>{% endif %}
+      {% else %}<span class="gap">…</span>{% endif %}
+    {% endfor %}
+    {% if p.has_next %}<a href="{{ page_url(p.next_num) }}" aria-label="{{ _('Келесі') }}"><i class="bi bi-chevron-right"></i></a>
+    {% else %}<span class="disabled"><i class="bi bi-chevron-right"></i></span>{% endif %}
+  </nav>
+  {% endif %}
+{% endmacro %}
+
+{% macro status_badge(a) %}<span class="badge s-{{ a.status }}">{{ a.status_label }}</span>{% endmacro %}
+
+{% macro logo(company, size='') %}<span class="logo {{ size }}" style="--h: {{ company.hue }}">{{ company.initials }}</span>{% endmacro %}
+
+{% macro type_tag(v) %}
+  {% set icons = {'full_time': 'clock', 'part_time': 'hourglass-split', 'remote': 'wifi', 'internship': 'mortarboard', 'contract': 'file-earmark-text'} %}
+  <span class="tag t-{{ v.employment_type }}"><i class="bi bi-{{ icons.get(v.employment_type, 'clock') }}"></i>{{ v.employment_label }}</span>
+{% endmacro %}
+
+{% macro save_button(v) %}
+  {% if current_user.is_authenticated and not current_user.is_admin %}
+    {% set on = current_user.has_saved(v) %}
+    <form class="save-form inline-form save-btn" action="{{ url_for('main.toggle_save', vacancy_id=v.id) }}" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="heart {{ 'on' if on }}" type="submit" aria-label="{{ _('Сақтау') }}"><i class="bi bi-heart{{ '-fill' if on }}"></i></button>
+    </form>
+  {% endif %}
+{% endmacro %}
+
+{# ---------------------------------------------------------------- вакансия карточкасы #}
+{% macro vacancy_card(v) %}
+  <article class="card spotlight job reveal">
+    <div class="job-head">
+      {{ logo(v.company) }}
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="{{ url_for('main.vacancy_detail', vacancy_id=v.id) }}">{{ v.title }}</a></h3>
+        <div class="job-company">{{ v.company.name }}</div>
+      </div>
+      {{ save_button(v) }}
+    </div>
+    <div class="tags">
+      {{ type_tag(v) }}
+      <span class="tag"><i class="bi bi-geo-alt"></i>{{ v.city }}</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>{{ v.experience_label }}</span>
+    </div>
+    <div class="job-salary {{ 'grad-text' if v.salary_min or v.salary_max else 'muted' }}">{{ v.salary_label }}</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> {{ v.created_at|ago }}</span>
+      <span><i class="bi bi-people"></i> {{ _('{n} өтініш', n=v.applications.count()) }}</span>
+    </div>
+  </article>
+{% endmacro %}
+
+{% macro empty(icon, title, text, action_url=None, action_text=None) %}
+  <div class="card empty reveal zoom">
+    <div class="ico"><i class="bi bi-{{ icon }}"></i></div>
+    <h3>{{ title }}</h3>
+    <p class="muted">{{ text }}</p>
+    {% if action_url %}<a class="btn btn-primary" href="{{ action_url }}">{{ action_text }}</a>{% endif %}
+  </div>
+{% endmacro %}
+
+{# POST + CSRF + растау модалы бар шағын форма #}
+{% macro post_button(url, label, icon, cls='btn btn-sm', confirm=None, title=None) %}
+  <form class="inline-form" action="{{ url }}" method="post" {% if confirm %}data-confirm="{{ confirm }}" data-confirm-title="{{ title or _('Сенімдісіз бе?') }}"{% endif %}>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="{{ cls }}" type="submit" title="{{ label }}"><i class="bi bi-{{ icon }}"></i>{% if label %} <span>{{ label }}</span>{% endif %}</button>
+  </form>
+{% endmacro %}

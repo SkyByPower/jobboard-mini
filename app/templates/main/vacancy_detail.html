@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field, logo, type_tag, save_button, status_badge, vacancy_card with context %}
+{% block title %}{{ vacancy.title }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <div class="breadcrumb reveal">
+      <a href="{{ url_for('main.index') }}">{{ _('Басты бет') }}</a><span>/</span>
+      <a href="{{ url_for('main.vacancies') }}">{{ _('Вакансиялар') }}</a><span>/</span>
+      <span>{{ vacancy.title }}</span>
+    </div>
+  </div>
+
+  <div class="detail">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <article class="card reveal">
+        <div class="detail-hero">
+          {{ logo(vacancy.company, 'lg') }}
+          <div style="flex:1;min-width:220px">
+            <h1>{{ vacancy.title }}</h1>
+            <a href="{{ url_for('main.company_detail', company_id=vacancy.company.id) }}" class="muted"><i class="bi bi-buildings"></i> {{ vacancy.company.name }}</a>
+            {% if not vacancy.is_active %}<span class="badge off" style="margin-left:8px">{{ _('Жабық') }}</span>{% endif %}
+          </div>
+          {{ save_button(vacancy) }}
+        </div>
+        <div class="meta-grid" data-stagger>
+          <div class="meta reveal"><div class="k">{{ _('Жалақы') }}</div><div class="v grad-text">{{ vacancy.salary_label }}</div></div>
+          <div class="meta reveal"><div class="k">{{ _('Қала') }}</div><div class="v">{{ vacancy.city }}</div></div>
+          <div class="meta reveal"><div class="k">{{ _('Жұмыс түрі') }}</div><div class="v">{{ vacancy.employment_label }}</div></div>
+          <div class="meta reveal"><div class="k">{{ _('Тәжірибе') }}</div><div class="v">{{ vacancy.experience_label }}</div></div>
+        </div>
+      </article>
+
+      <article class="card prose reveal">
+        <h3 style="margin-top:0">{{ _('Вакансия туралы') }}</h3>
+        <p style="white-space:pre-line">{{ vacancy.description }}</p>
+        <h3>{{ _('Талаптар') }}</h3>
+        <ul class="req-list">
+          {% for line in vacancy.requirements.splitlines() if line.strip() %}<li>{{ line }}</li>{% endfor %}
+        </ul>
+        <h3>{{ _('Компания туралы') }}</h3>
+        <p class="muted">{{ vacancy.company.description }}</p>
+        <div class="tags">
+          {{ type_tag(vacancy) }}
+          <span class="tag"><i class="bi bi-calendar3"></i>{{ vacancy.created_at|date }}</span>
+          <span class="tag"><i class="bi bi-people"></i>{{ _('{n} өтініш', n=vacancy.applications.count()) }}</span>
+        </div>
+      </article>
+
+      {% if similar %}
+      <div>
+        <h3 class="reveal">{{ _('Ұқсас вакансиялар') }}</h3>
+        <div class="grid grid-3" data-stagger>{% for v in similar %}{{ vacancy_card(v) }}{% endfor %}</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <aside class="sticky-side">
+      <div class="card reveal" id="apply">
+        {% if not current_user.is_authenticated %}
+          <div class="success-state">
+            <div class="auth-icon" style="width:56px;height:56px;font-size:1.3rem"><i class="bi bi-lock"></i></div>
+            <h3>{{ _('Өтініш жіберу үшін кіріңіз') }}</h3>
+            <p class="muted">{{ _('Аккаунтыңыз болмаса, бір минутта тіркеліңіз.') }}</p>
+            <div style="display:flex;gap:8px;justify-content:center">
+              <a class="btn btn-primary" href="{{ url_for('auth.login', next=request.path) }}">{{ _('Кіру') }}</a>
+              <a class="btn" href="{{ url_for('auth.register') }}">{{ _('Тіркелу') }}</a>
+            </div>
+          </div>
+        {% elif current_user.is_admin %}
+          <h3>{{ _('Әкімші әрекеттері') }}</h3>
+          <p class="muted small">{{ _('Әкімші өтініш жібермейді — вакансияны басқара алады.') }}</p>
+          <div style="display:grid;gap:8px">
+            <a class="btn btn-primary" href="{{ url_for('admin.vacancy_edit', vacancy_id=vacancy.id) }}"><i class="bi bi-pencil"></i> {{ _('Өңдеу') }}</a>
+            <a class="btn" href="{{ url_for('admin.applications', vacancy=vacancy.id) }}"><i class="bi bi-inbox"></i> {{ _('Өтініштер') }} ({{ vacancy.applications.count() }})</a>
+          </div>
+        {% elif existing %}
+          <div class="success-state">
+            <div class="big"><i class="bi bi-patch-check-fill"></i></div>
+            <h3>{{ _('Өтініш жіберілді') }}</h3>
+            <p class="muted small">{{ existing.created_at|date('%d.%m.%Y %H:%M') }}</p>
+            {{ status_badge(existing) }}
+            {% if existing.admin_note %}<div class="note-box small" style="margin-top:14px;text-align:left"><b>{{ _('Жұмыс берушіден:') }}</b> {{ existing.admin_note }}</div>{% endif %}
+            <div style="margin-top:16px"><a class="btn btn-sm" href="{{ url_for('main.my_applications') }}">{{ _('Өтініштерім') }} <i class="bi bi-arrow-right"></i></a></div>
+          </div>
+        {% elif not vacancy.is_active %}
+          <div class="success-state"><h3>{{ _('Өтінім қабылдау жабық') }}</h3><p class="muted">{{ _('Бұл вакансия бойынша іріктеу аяқталды.') }}</p></div>
+        {% else %}
+          <h3><i class="bi bi-send"></i> {{ _('Өтініш жіберу') }}</h3>
+          <form method="post" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() }}
+            <div style="display:grid;gap:14px">
+              {{ field(form.phone, icon='telephone', placeholder='+7 700 123 45 67') }}
+              {{ field(form.expected_salary, icon='cash-coin', placeholder=_('мысалы, 500000')) }}
+              {{ field(form.cover_letter, placeholder=_('Неліктен осы вакансияға лайықты екеніңізді қысқаша жазыңыз...'), maxlength=2000) }}
+              <div class="field {{ 'has-error' if form.cv.errors }}">
+                <label>{{ form.cv.label.text }}<span class="req">*</span></label>
+                <div class="dropzone" data-max-mb="5">
+                  {{ form.cv(accept='application/pdf,.pdf') }}
+                  <div class="dz-empty">
+                    <span class="dz-ico"><i class="bi bi-cloud-arrow-up"></i></span>
+                    <div>{{ _('<b>Файлды таңдаңыз</b> немесе осында сүйреңіз')|safe }}</div>
+                    <div class="small faint">{{ _('Тек PDF · ең көбі 5 МБ') }}</div>
+                  </div>
+                  <div class="dz-file">
+                    <span class="pdf-ico">PDF</span>
+                    <div style="min-width:0"><div class="dz-name" style="font-weight:600;word-break:break-all"></div><div class="dz-size small muted"></div></div>
+                    <i class="bi bi-check-circle-fill" style="color:var(--success);margin-left:auto;font-size:1.3rem"></i>
+                  </div>
+                </div>
+                {% for e in form.cv.errors %}<span class="error"><i class="bi bi-exclamation-circle"></i>{{ e }}</span>{% endfor %}
+              </div>
+              <button class="btn btn-primary btn-block btn-lg" type="submit">{{ _('Өтініш жіберу') }} <i class="bi bi-send"></i></button>
+            </div>
+          </form>
+        {% endif %}
+      </div>
+
+      <div class="card reveal" style="--i:1">
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+          {{ logo(vacancy.company) }}
+          <div><b>{{ vacancy.company.name }}</b><div class="small muted">{{ vacancy.company.industry }} · {{ vacancy.company.city }}</div></div>
+        </div>
+        <a class="btn btn-sm btn-block" href="{{ url_for('main.company_detail', company_id=vacancy.company.id) }}">{{ _('Компанияның барлық вакансиялары ({n})', n=vacancy.company.active_vacancies_count) }}</a>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

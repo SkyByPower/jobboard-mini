@@ -1,0 +1,141 @@
+{
+  "info": {
+    "name": "JumysBoard — Job Board Mini API",
+    "description": "Flask Job Board Mini REST API. `flask seed` кейін admin токені: admin-demo-token, user токені: user-demo-token-1.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:5000/api" },
+    { "key": "admin_key", "value": "admin-demo-token" },
+    { "key": "user_key", "value": "user-demo-token-1" },
+    { "key": "vacancy_id", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Vacancies",
+      "item": [
+        {
+          "name": "GET list (search, filter, sort, page)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/vacancies?q=python&type=full_time&sort=salary_desc&page=1&per_page=5",
+              "host": ["{{base_url}}"], "path": ["vacancies"],
+              "query": [
+                { "key": "q", "value": "python" },
+                { "key": "type", "value": "full_time" },
+                { "key": "sort", "value": "salary_desc" },
+                { "key": "page", "value": "1" },
+                { "key": "per_page", "value": "5" }
+              ]
+            }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('has items', () => pm.expect(pm.response.json()).to.have.property('items'));"
+          ] } }]
+        },
+        {
+          "name": "GET one",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/vacancies/{{vacancy_id}}", "host": ["{{base_url}}"], "path": ["vacancies", "{{vacancy_id}}"] } },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 OK', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "POST create (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-API-Key", "value": "{{admin_key}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Go Backend әзірлеуші\",\n  \"company_id\": 1,\n  \"city\": \"Алматы\",\n  \"employment_type\": \"remote\",\n  \"experience\": \"middle\",\n  \"salary_min\": 800000,\n  \"salary_max\": 1200000,\n  \"description\": \"Жоғары жүктемелі микросервистер әзірлейтін командаға Go маманы керек.\",\n  \"requirements\": \"Go 2+ жыл\\nPostgreSQL\\nDocker\"\n}" },
+            "url": { "raw": "{{base_url}}/vacancies", "host": ["{{base_url}}"], "path": ["vacancies"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('201 Created', () => pm.response.to.have.status(201));",
+            "pm.collectionVariables.set('vacancy_id', pm.response.json().id);"
+          ] } }]
+        },
+        {
+          "name": "POST create — validation error (422)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "X-API-Key", "value": "{{admin_key}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{ \"title\": \"x\", \"salary_min\": -5 }" },
+            "url": { "raw": "{{base_url}}/vacancies", "host": ["{{base_url}}"], "path": ["vacancies"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('422', () => pm.response.to.have.status(422));"] } }]
+        },
+        {
+          "name": "POST create — user forbidden (403)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "X-API-Key", "value": "{{user_key}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": { "raw": "{{base_url}}/vacancies", "host": ["{{base_url}}"], "path": ["vacancies"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('403', () => pm.response.to.have.status(403));"] } }]
+        },
+        {
+          "name": "PUT update (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "X-API-Key", "value": "{{admin_key}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{ \"title\": \"Senior Go әзірлеуші\", \"salary_max\": 1500000 }" },
+            "url": { "raw": "{{base_url}}/vacancies/{{vacancy_id}}", "host": ["{{base_url}}"], "path": ["vacancies", "{{vacancy_id}}"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 OK', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "DELETE (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "X-API-Key", "value": "{{admin_key}}" }],
+            "url": { "raw": "{{base_url}}/vacancies/{{vacancy_id}}", "host": ["{{base_url}}"], "path": ["vacancies", "{{vacancy_id}}"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 OK', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "Companies",
+      "item": [
+        {
+          "name": "GET list",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/companies", "host": ["{{base_url}}"], "path": ["companies"] } }
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "GET my applications (user)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-API-Key", "value": "{{user_key}}" }],
+            "url": { "raw": "{{base_url}}/applications", "host": ["{{base_url}}"], "path": ["applications"] }
+          }
+        },
+        {
+          "name": "GET all applications (admin, status filter)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-API-Key", "value": "{{admin_key}}" }],
+            "url": { "raw": "{{base_url}}/applications?status=pending", "host": ["{{base_url}}"], "path": ["applications"], "query": [{ "key": "status", "value": "pending" }] }
+          }
+        },
+        {
+          "name": "PUT change status (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "X-API-Key", "value": "{{admin_key}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{ \"status\": \"accepted\", \"admin_note\": \"Сұхбатқа шақырамыз!\" }" },
+            "url": { "raw": "{{base_url}}/applications/1/status", "host": ["{{base_url}}"], "path": ["applications", "1", "status"] }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 OK', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    }
+  ]
+}

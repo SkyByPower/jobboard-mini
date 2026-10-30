@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% from "_macros.html" import vacancy_card, logo with context %}
+{% block title %}{{ _('Басты бет') }}{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="eyebrow reveal"><b>{{ _('Жаңа') }}</b> {{ _('{n} белсенді вакансия сізді күтуде', n=stats.vacancies) }}</div>
+      <h1 class="reveal" style="--i:1">
+        {{ _('Арманыңыздағы') }}<br>
+        <span class="rotator">
+          <span class="on">{{ _('жұмысты') }}</span>
+          <span>{{ _('команданы') }}</span>
+          <span>{{ _('мансапты') }}</span>
+          <span>{{ _('тағылымдаманы') }}</span>
+        </span><br>{{ _('бір жерден табыңыз') }}
+      </h1>
+      <p class="lead reveal" style="--i:2">{{ _('Қазақстандағы үздік компаниялардың вакансиялары. Сүзгі арқылы іздеңіз, CV жүктеп, бір батырмамен өтініш жіберіңіз.') }}</p>
+      <form class="search-bar reveal" style="--i:3" action="{{ url_for('main.vacancies') }}" method="get" role="search">
+        <label class="seg"><i class="bi bi-search"></i><input name="q" placeholder="{{ _('Лауазым, дағды немесе компания') }}" aria-label="{{ _('Іздеу') }}"></label>
+        <label class="seg" style="flex:.7"><i class="bi bi-geo-alt"></i>
+          <select name="city" aria-label="{{ _('Қала') }}">
+            <option value="">{{ _('Барлық қала') }}</option>
+            {% for c in ['Алматы', 'Астана', 'Шымкент', 'Қарағанды', 'Атырау'] %}<option>{{ c }}</option>{% endfor %}
+          </select>
+        </label>
+        <button class="btn btn-primary" type="submit">{{ _('Іздеу') }} <i class="bi bi-arrow-right"></i></button>
+      </form>
+      <div class="popular reveal" style="--i:4">
+        <span>{{ _('Танымал:') }}</span>
+        <a href="{{ url_for('main.vacancies', q='Python') }}">Python</a>
+        <a href="{{ url_for('main.vacancies', type='remote') }}">{{ _('Қашықтан') }}</a>
+        <a href="{{ url_for('main.vacancies', type='internship') }}">{{ _('Тағылымдама') }}</a>
+        <a href="{{ url_for('main.vacancies', q='дизайн') }}">{{ _('Дизайн') }}</a>
+      </div>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <div class="orb"></div>
+      {% if latest %}
+      <div class="float-card fc-1">
+        {{ logo(latest[0].company) }}
+        <div><div class="title">{{ latest[0].title }}</div><div class="sub">{{ latest[0].company.name }} · {{ latest[0].city }}</div></div>
+      </div>
+      {% endif %}
+      <div class="float-card fc-2">
+        <span class="avatar" style="background:linear-gradient(135deg,#10c9b4,#3b82f6)"><i class="bi bi-check2"></i></span>
+        <div><div class="title">{{ _('Өтініш қабылданды!') }}</div><div class="sub">{{ _('Сұхбатқа шақыру · 2 мин бұрын') }}</div></div>
+      </div>
+      <div class="float-card fc-3">
+        <div style="display:flex;justify-content:space-between"><span class="title">{{ _('Профиль толтырылуы') }}</span><span class="sub">82%</span></div>
+        <div class="mini-bar" style="--w:82%"><span></span></div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px"><span class="sub">{{ _('Өтініштер') }}</span><span class="sub">5 / 7</span></div>
+        <div class="mini-bar" style="--w:68%"><span style="animation-delay:1s"></span></div>
+      </div>
+      <div class="float-card fc-4">
+        <i class="bi bi-lightning-charge-fill" style="color:#f5a524;font-size:1.3rem"></i>
+        <div class="title">{{ _('+{n} өтініш', n=stats.applications) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="stats" data-stagger>
+      <div class="stat reveal" style="--c:#6c4cff"><div class="ico"><i class="bi bi-briefcase"></i></div><div class="num" data-count="{{ stats.vacancies }}">0</div><div class="lbl">{{ _('Белсенді вакансия') }}</div></div>
+      <div class="stat reveal" style="--c:#10c9b4"><div class="ico"><i class="bi bi-buildings"></i></div><div class="num" data-count="{{ stats.companies }}">0</div><div class="lbl">{{ _p('stat', 'Компания') }}</div></div>
+      <div class="stat reveal" style="--c:#ff7aa8"><div class="ico"><i class="bi bi-send-check"></i></div><div class="num" data-count="{{ stats.applications }}">0</div><div class="lbl">{{ _('Жіберілген өтініш') }}</div></div>
+      <div class="stat reveal" style="--c:#f5a524"><div class="ico"><i class="bi bi-people"></i></div><div class="num" data-count="{{ stats.users }}">0</div><div class="lbl">{{ _p('stat', 'Пайдаланушы') }}</div></div>
+    </div>
+  </div>
+</section>
+
+{% if top_companies %}
+<section class="section" style="padding-top:10px">
+  <div class="container">
+    <p class="muted small reveal" style="text-align:center;margin-bottom:16px">{{ _('Бізге сенетін компаниялар') }}</p>
+    <div class="marquee reveal">
+      <div class="marquee-track">
+        {% for copy in range(2) %}{% for c in top_companies %}
+          <a class="marquee-item" href="{{ url_for('main.company_detail', company_id=c.id) }}" {% if copy %}aria-hidden="true" tabindex="-1"{% endif %}>
+            {{ logo(c) }}<span>{{ c.name }}<small>{{ c.industry }} · {{ c.city }}</small></span>
+          </a>
+        {% endfor %}{% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div class="reveal from-left">
+        <h2>{{ _('Жаңа') }} <span class="grad-text">{{ _('вакансиялар') }}</span></h2>
+        <p>{{ _('Соңғы қосылған ұсыныстар') }}</p>
+      </div>
+      <a class="btn reveal" href="{{ url_for('main.vacancies') }}">{{ _('Барлығын көру') }} <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="grid grid-3" data-stagger>
+      {% for v in latest %}{{ vacancy_card(v) }}{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head"><div class="reveal from-left"><h2>{{ _('Қалай жұмыс істейді?') }}</h2><p>{{ _('Үш қарапайым қадам') }}</p></div></div>
+    <div class="steps" data-stagger>
+      <div class="card spotlight step reveal"><div class="n"><i class="bi bi-person-plus"></i></div><h3>{{ _('Тіркеліңіз') }}</h3><p class="muted">{{ _('Бір минутта аккаунт ашып, профиліңізді толтырыңыз.') }}</p></div>
+      <div class="card spotlight step reveal"><div class="n"><i class="bi bi-funnel"></i></div><h3>{{ _('Вакансия табыңыз') }}</h3><p class="muted">{{ _('Қала, жұмыс түрі, тәжірибе және жалақы бойынша сүзіңіз.') }}</p></div>
+      <div class="card spotlight step reveal"><div class="n"><i class="bi bi-file-earmark-pdf"></i></div><h3>{{ _('CV жіберіңіз') }}</h3><p class="muted">{{ _('PDF түйіндеме жүктеп, өтінішіңіздің мәртебесін бақылаңыз.') }}</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="cta reveal zoom">
+      <h2>{{ _('Келесі қадам — сіздің мансабыңыз') }}</h2>
+      <p>{{ _('Тіркеліп, ұнаған вакансияларды сақтаңыз және бірнеше секундта өтініш жіберіңіз.') }}</p>
+      {% if current_user.is_authenticated %}
+        <a class="btn btn-lg" href="{{ url_for('main.vacancies') }}">{{ _('Вакансияларға өту') }} <i class="bi bi-arrow-right"></i></a>
+      {% else %}
+        <a class="btn btn-lg" href="{{ url_for('auth.register') }}">{{ _('Тегін тіркелу') }} <i class="bi bi-rocket-takeoff"></i></a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
