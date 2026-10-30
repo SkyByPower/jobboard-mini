@@ -12,12 +12,14 @@
   {{ form.hidden_tag() }}
   <div class="form-grid">
     {{ field(form.name, placeholder='Steppe Soft', maxlength=100) }}
-    {{ field(form.industry, icon='tag', placeholder=_('IT, Финтех, Логистика...'), maxlength=60) }}
     {{ field(form.city, icon='geo-alt', placeholder='Астана', maxlength=60) }}
+    {{ field(form.industry, icon='tag', placeholder=_('IT, Финтех, Логистика...'), maxlength=60) }}
+    {{ field(form.industry_ru, icon='tag', placeholder='IT, Финтех, Логистика...', maxlength=60) }}
     {{ field(form.website, icon='globe2', placeholder='https://example.kz') }}
     {{ field(form.email, icon='envelope', placeholder='hr@example.kz') }}
-    {{ field(form.phone, icon='telephone', placeholder='+7 727 300 00 00') }}
-    {{ field(form.description, cls='full', placeholder=_('Компания туралы қысқаша...'), maxlength=3000, attrs={'rows': 6}) }}
+    {{ field(form.phone, icon='telephone', placeholder='+7 727 300 00 00', cls='full') }}
+    {{ field(form.description, placeholder=_('Компания туралы қысқаша...'), maxlength=3000, attrs={'rows': 6}) }}
+    {{ field(form.description_ru, placeholder='Кратко о компании...', maxlength=3000, attrs={'rows': 6}) }}
   </div>
   <div class="form-actions">
     <a class="btn" href="{{ url_for('admin.companies') }}">{{ _('Болдырмау') }}</a>

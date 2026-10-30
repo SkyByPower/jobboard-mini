@@ -15,7 +15,7 @@
       <label class="seg" style="flex:.5"><i class="bi bi-geo-alt"></i>
         <select name="city" aria-label="{{ _('Қала') }}">
           <option value="">{{ _('Барлық қала') }}</option>
-          {% for c in cities %}<option {{ 'selected' if a.get('city') == c }}>{{ c }}</option>{% endfor %}
+          {% for c in cities %}<option value="{{ c }}" {{ 'selected' if a.get('city') == c }}>{{ _(c) }}</option>{% endfor %}
         </select>
       </label>
       <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i> {{ _('Іздеу') }}</button>
@@ -72,7 +72,7 @@
 
         {% set chips = [] %}
         {% if a.get('q') %}{% set x_ = chips.append('«' ~ a.get('q') ~ '»') %}{% endif %}
-        {% if a.get('city') %}{% set x_ = chips.append(a.get('city')) %}{% endif %}
+        {% if a.get('city') %}{% set x_ = chips.append(_(a.get('city'))) %}{% endif %}
         {% for t in selected_types %}{% if t in EMPLOYMENT_TYPES %}{% set x_ = chips.append(_(EMPLOYMENT_TYPES[t])) %}{% endif %}{% endfor %}
         {% if a.get('experience') in EXPERIENCE_LEVELS %}{% set x_ = chips.append(_(EXPERIENCE_LEVELS[a.get('experience')])) %}{% endif %}
         {% if a.get('salary_from') %}{% set x_ = chips.append(_('{n} ₸-ден', n=a.get('salary_from'))) %}{% endif %}

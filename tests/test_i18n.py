@@ -54,6 +54,24 @@ def test_language_switch_rejects_bad_input(client):
     assert res.headers["Location"].endswith("/")
 
 
+def test_content_translation_with_fallback(client, app):
+    from app.extensions import db
+    from app.models import Vacancy
+
+    with app.app_context():
+        vacancy = db.session.get(Vacancy, 1)
+        vacancy.title_ru = "Python-разработчик"
+        vacancy.city = "Қарағанды"
+        db.session.commit()
+    client.get("/lang/ru")
+    page = client.get("/vacancies/1").data.decode()
+    assert "Python-разработчик" in page and "Караганда" in page
+    # орысша нұсқасы жоқ өріс — қазақшасы көрсетіледі
+    assert "Python әзірлеушіге арналған" in page
+    client.get("/lang/kk")
+    assert "Python Developer" in client.get("/vacancies/1").data.decode()
+
+
 def test_russian_form_errors(client):
     client.get("/lang/ru")
     res = client.post("/auth/register", data={"email": "bad"})

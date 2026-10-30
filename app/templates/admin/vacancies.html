@@ -21,7 +21,7 @@
     <tbody>
       {% for v in pagination.items %}
       <tr>
-        <td><div class="ent">{{ logo(v.company) }}<div><a class="row-link" href="{{ url_for('main.vacancy_detail', vacancy_id=v.id) }}">{{ v.title }}</a><span class="small muted">{{ v.company.name }} · {{ v.city }}</span></div></div></td>
+        <td><div class="ent">{{ logo(v.company) }}<div><a class="row-link" href="{{ url_for('main.vacancy_detail', vacancy_id=v.id) }}">{{ v.tr('title') }}</a><span class="small muted">{{ v.company.name }} · {{ v.city_label }}</span></div></div></td>
         <td>{{ type_tag(v) }}</td>
         <td class="small" style="white-space:nowrap">{{ v.salary_label }}</td>
         <td><a href="{{ url_for('admin.applications', vacancy=v.id) }}"><b>{{ v.applications.count() }}</b></a></td>
@@ -30,7 +30,7 @@
           <div class="actions">
             {{ post_button(url_for('admin.vacancy_toggle', vacancy_id=v.id), '', 'toggle-on' if v.is_active else 'toggle-off') }}
             <a class="btn btn-sm" href="{{ url_for('admin.vacancy_edit', vacancy_id=v.id) }}" title="{{ _('Өңдеу') }}"><i class="bi bi-pencil"></i></a>
-            {{ post_button(url_for('admin.vacancy_delete', vacancy_id=v.id), '', 'trash3', 'btn btn-sm btn-danger', _('«{title}» және оған келген барлық өтініштер өшіріледі.', title=v.title), _('Вакансияны өшіру керек пе?')) }}
+            {{ post_button(url_for('admin.vacancy_delete', vacancy_id=v.id), '', 'trash3', 'btn btn-sm btn-danger', _('«{title}» және оған келген барлық өтініштер өшіріледі.', title=v.tr('title')), _('Вакансияны өшіру керек пе?')) }}
           </div>
         </td>
       </tr>

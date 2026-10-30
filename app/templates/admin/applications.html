@@ -5,7 +5,7 @@
 <div class="admin-head reveal">
   <div>
     <h1>{{ _('Өтініштер') }} <span class="muted" style="font-size:1rem">({{ pagination.total }})</span></h1>
-    {% if vacancy %}<p class="muted" style="margin:4px 0 0">{{ _('Вакансия:') }} <b>{{ vacancy.title }}</b> · <a href="{{ url_for('admin.applications') }}">{{ _('сүзгіні алу') }}</a></p>{% endif %}
+    {% if vacancy %}<p class="muted" style="margin:4px 0 0">{{ _('Вакансия:') }} <b>{{ vacancy.tr('title') }}</b> · <a href="{{ url_for('admin.applications') }}">{{ _('сүзгіні алу') }}</a></p>{% endif %}
   </div>
 </div>
 
@@ -29,7 +29,7 @@
       {% for a in pagination.items %}
       <tr>
         <td><div class="ent"><span class="avatar">{{ a.user.initials }}</span><div><a class="row-link" href="{{ url_for('admin.application_review', app_id=a.id) }}">{{ a.user.full_name }}</a><span class="small muted">{{ a.user.email }}</span></div></div></td>
-        <td><a href="{{ url_for('main.vacancy_detail', vacancy_id=a.vacancy.id) }}" style="color:var(--text)">{{ a.vacancy.title }}</a><div class="small muted">{{ a.vacancy.company.name }}</div></td>
+        <td><a href="{{ url_for('main.vacancy_detail', vacancy_id=a.vacancy.id) }}" style="color:var(--text)">{{ a.vacancy.tr('title') }}</a><div class="small muted">{{ a.vacancy.company.name }}</div></td>
         <td class="small" style="white-space:nowrap">{{ a.created_at|date('%d.%m.%Y') }}<div class="faint">{{ a.created_at|ago }}</div></td>
         <td>{{ status_badge(a) }}</td>
         <td>

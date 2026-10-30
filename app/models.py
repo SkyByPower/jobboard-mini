@@ -6,10 +6,26 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from .extensions import db, login_manager
 from .i18n import gettext as _
+from .i18n import get_locale
 
 
 def utcnow():
     return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
+class TranslatableMixin:
+    """Мазмұн өрістерінің орысша нұсқасы (`<өріс>_ru`). Бос болса — қазақшасы көрсетіледі."""
+
+    def tr(self, field):
+        if get_locale() == "ru":
+            value = getattr(self, f"{field}_ru", None)
+            if value:
+                return value
+        return getattr(self, field)
+
+    @property
+    def city_label(self):
+        return _(self.city)
 
 
 # көп–көп: пайдаланушы ⇄ сақталған вакансиялар
@@ -78,14 +94,16 @@ def load_user(user_id):
     return db.session.get(User, int(user_id))
 
 
-class Company(db.Model):
+class Company(TranslatableMixin, db.Model):
     __tablename__ = "companies"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
     industry = db.Column(db.String(60), nullable=False)
+    industry_ru = db.Column(db.String(60))
     city = db.Column(db.String(60), nullable=False)
     description = db.Column(db.Text, nullable=False)
+    description_ru = db.Column(db.Text)
     website = db.Column(db.String(200))
     email = db.Column(db.String(120))
     phone = db.Column(db.String(20))
@@ -113,13 +131,14 @@ class Company(db.Model):
             "id": self.id,
             "name": self.name,
             "industry": self.industry,
+            "industry_ru": self.industry_ru,
             "city": self.city,
             "website": self.website,
             "vacancies": self.active_vacancies_count,
         }
 
 
-class Vacancy(db.Model):
+class Vacancy(TranslatableMixin, db.Model):
     __tablename__ = "vacancies"
 
     EMPLOYMENT_TYPES = {
@@ -138,8 +157,11 @@ class Vacancy(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), nullable=False, index=True)
+    title_ru = db.Column(db.String(120))
     description = db.Column(db.Text, nullable=False)
+    description_ru = db.Column(db.Text)
     requirements = db.Column(db.Text, nullable=False)
+    requirements_ru = db.Column(db.Text)
     city = db.Column(db.String(60), nullable=False)
     employment_type = db.Column(db.String(20), nullable=False, default="full_time")
     experience = db.Column(db.String(20), nullable=False, default="none")
@@ -179,8 +201,11 @@ class Vacancy(db.Model):
         return {
             "id": self.id,
             "title": self.title,
+            "title_ru": self.title_ru,
             "description": self.description,
+            "description_ru": self.description_ru,
             "requirements": self.requirements,
+            "requirements_ru": self.requirements_ru,
             "city": self.city,
             "employment_type": self.employment_type,
             "experience": self.experience,

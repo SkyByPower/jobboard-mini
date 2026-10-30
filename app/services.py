@@ -30,7 +30,13 @@ def filter_vacancies(args, only_active=True):
     if q:
         like = f"%{q}%"
         stmt = stmt.filter(
-            or_(Vacancy.title.ilike(like), Vacancy.description.ilike(like), Company.name.ilike(like))
+            or_(
+                Vacancy.title.ilike(like),
+                Vacancy.title_ru.ilike(like),
+                Vacancy.description.ilike(like),
+                Vacancy.description_ru.ilike(like),
+                Company.name.ilike(like),
+            )
         )
 
     city = (args.get("city") or "").strip()

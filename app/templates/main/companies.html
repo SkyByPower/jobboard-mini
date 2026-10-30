@@ -22,12 +22,12 @@
         {{ logo(c) }}
         <div>
           <h3><a href="{{ url_for('main.company_detail', company_id=c.id) }}">{{ c.name }}</a></h3>
-          <div class="small muted">{{ c.industry }}</div>
+          <div class="small muted">{{ c.tr('industry') }}</div>
         </div>
       </div>
-      <p>{{ c.description }}</p>
+      <p>{{ c.tr('description') }}</p>
       <div class="foot">
-        <span><i class="bi bi-geo-alt"></i> {{ c.city }}</span>
+        <span><i class="bi bi-geo-alt"></i> {{ c.city_label }}</span>
         <span>{{ _('{n} ашық вакансия', n='<b>%d</b>'|format(c.active_vacancies_count))|safe }} <i class="bi bi-arrow-right"></i></span>
       </div>
     </article>

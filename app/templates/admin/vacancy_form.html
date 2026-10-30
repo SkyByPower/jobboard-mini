@@ -4,22 +4,25 @@
 {% block admin_content %}
 <div class="admin-head reveal">
   <div>
-    <div class="breadcrumb"><a href="{{ url_for('admin.vacancies') }}">{{ _('Вакансиялар') }}</a><span>/</span><span>{{ vacancy.title if vacancy else _('Жаңа вакансия') }}</span></div>
+    <div class="breadcrumb"><a href="{{ url_for('admin.vacancies') }}">{{ _('Вакансиялар') }}</a><span>/</span><span>{{ vacancy.tr('title') if vacancy else _('Жаңа вакансия') }}</span></div>
     <h1>{{ _('Вакансияны өңдеу') if vacancy else _('Жаңа вакансия') }}</h1>
   </div>
 </div>
 <form class="card reveal" method="post" novalidate>
   {{ form.hidden_tag() }}
   <div class="form-grid">
-    {{ field(form.title, cls='full', placeholder=_('мысалы, Python Backend әзірлеуші'), maxlength=120) }}
+    {{ field(form.title, placeholder=_('мысалы, Python Backend әзірлеуші'), maxlength=120) }}
+    {{ field(form.title_ru, placeholder='Python Backend-разработчик', maxlength=120) }}
     {{ field(form.company_id) }}
     {{ field(form.city, icon='geo-alt', placeholder='Алматы', maxlength=60) }}
     {{ field(form.employment_type) }}
     {{ field(form.experience) }}
     {{ field(form.salary_min, icon='cash', placeholder='300000', attrs={'min': 0, 'max': 10000000, 'step': 10000}) }}
     {{ field(form.salary_max, icon='cash-stack', placeholder='600000', attrs={'min': 0, 'max': 10000000, 'step': 10000}) }}
-    {{ field(form.description, cls='full', placeholder=_('Міндеттер, жұмыс шарттары...'), maxlength=5000, attrs={'rows': 6}) }}
-    {{ field(form.requirements, cls='full', placeholder='Python 3\nSQL\nGit', maxlength=3000, attrs={'rows': 5}) }}
+    {{ field(form.description, placeholder=_('Міндеттер, жұмыс шарттары...'), maxlength=5000, attrs={'rows': 6}) }}
+    {{ field(form.description_ru, placeholder='Обязанности, условия работы...', maxlength=5000, attrs={'rows': 6}) }}
+    {{ field(form.requirements, placeholder='Python 3\nSQL\nGit', maxlength=3000, attrs={'rows': 5}) }}
+    {{ field(form.requirements_ru, placeholder='Python 3\nSQL\nGit', maxlength=3000, attrs={'rows': 5}) }}
     {{ field(form.is_active, cls='full') }}
   </div>
   <div class="form-actions">

@@ -17,7 +17,7 @@
         {{ f(**kw) }}
       {% endif %}
     {% endif %}
-    {% if hint %}<span class="hint">{{ hint }}</span>{% endif %}
+    {% if hint or f.description %}<span class="hint">{{ hint or f.description }}</span>{% endif %}
     {% for e in f.errors %}<span class="error"><i class="bi bi-exclamation-circle"></i>{{ e }}</span>{% endfor %}
   </div>
 {% endmacro %}
@@ -65,14 +65,14 @@
     <div class="job-head">
       {{ logo(v.company) }}
       <div style="flex:1;min-width:0">
-        <h3 class="job-title"><a href="{{ url_for('main.vacancy_detail', vacancy_id=v.id) }}">{{ v.title }}</a></h3>
+        <h3 class="job-title"><a href="{{ url_for('main.vacancy_detail', vacancy_id=v.id) }}">{{ v.tr('title') }}</a></h3>
         <div class="job-company">{{ v.company.name }}</div>
       </div>
       {{ save_button(v) }}
     </div>
     <div class="tags">
       {{ type_tag(v) }}
-      <span class="tag"><i class="bi bi-geo-alt"></i>{{ v.city }}</span>
+      <span class="tag"><i class="bi bi-geo-alt"></i>{{ v.city_label }}</span>
       <span class="tag"><i class="bi bi-bar-chart"></i>{{ v.experience_label }}</span>
     </div>
     <div class="job-salary {{ 'grad-text' if v.salary_min or v.salary_max else 'muted' }}">{{ v.salary_label }}</div>

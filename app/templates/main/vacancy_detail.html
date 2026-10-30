@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% from "_macros.html" import field, logo, type_tag, save_button, status_badge, vacancy_card with context %}
-{% block title %}{{ vacancy.title }}{% endblock %}
+{% block title %}{{ vacancy.tr('title') }}{% endblock %}
 {% block content %}
 <div class="container">
   <div class="page-head">
     <div class="breadcrumb reveal">
       <a href="{{ url_for('main.index') }}">{{ _('Басты бет') }}</a><span>/</span>
       <a href="{{ url_for('main.vacancies') }}">{{ _('Вакансиялар') }}</a><span>/</span>
-      <span>{{ vacancy.title }}</span>
+      <span>{{ vacancy.tr('title') }}</span>
     </div>
   </div>
 
@@ -17,7 +17,7 @@
         <div class="detail-hero">
           {{ logo(vacancy.company, 'lg') }}
           <div style="flex:1;min-width:220px">
-            <h1>{{ vacancy.title }}</h1>
+            <h1>{{ vacancy.tr('title') }}</h1>
             <a href="{{ url_for('main.company_detail', company_id=vacancy.company.id) }}" class="muted"><i class="bi bi-buildings"></i> {{ vacancy.company.name }}</a>
             {% if not vacancy.is_active %}<span class="badge off" style="margin-left:8px">{{ _('Жабық') }}</span>{% endif %}
           </div>
@@ -25,7 +25,7 @@
         </div>
         <div class="meta-grid" data-stagger>
           <div class="meta reveal"><div class="k">{{ _('Жалақы') }}</div><div class="v grad-text">{{ vacancy.salary_label }}</div></div>
-          <div class="meta reveal"><div class="k">{{ _('Қала') }}</div><div class="v">{{ vacancy.city }}</div></div>
+          <div class="meta reveal"><div class="k">{{ _('Қала') }}</div><div class="v">{{ vacancy.city_label }}</div></div>
           <div class="meta reveal"><div class="k">{{ _('Жұмыс түрі') }}</div><div class="v">{{ vacancy.employment_label }}</div></div>
           <div class="meta reveal"><div class="k">{{ _('Тәжірибе') }}</div><div class="v">{{ vacancy.experience_label }}</div></div>
         </div>
@@ -33,13 +33,13 @@
 
       <article class="card prose reveal">
         <h3 style="margin-top:0">{{ _('Вакансия туралы') }}</h3>
-        <p style="white-space:pre-line">{{ vacancy.description }}</p>
+        <p style="white-space:pre-line">{{ vacancy.tr('description') }}</p>
         <h3>{{ _('Талаптар') }}</h3>
         <ul class="req-list">
-          {% for line in vacancy.requirements.splitlines() if line.strip() %}<li>{{ line }}</li>{% endfor %}
+          {% for line in vacancy.tr('requirements').splitlines() if line.strip() %}<li>{{ line }}</li>{% endfor %}
         </ul>
         <h3>{{ _('Компания туралы') }}</h3>
-        <p class="muted">{{ vacancy.company.description }}</p>
+        <p class="muted">{{ vacancy.company.tr('description') }}</p>
         <div class="tags">
           {{ type_tag(vacancy) }}
           <span class="tag"><i class="bi bi-calendar3"></i>{{ vacancy.created_at|date }}</span>
@@ -119,7 +119,7 @@
       <div class="card reveal" style="--i:1">
         <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
           {{ logo(vacancy.company) }}
-          <div><b>{{ vacancy.company.name }}</b><div class="small muted">{{ vacancy.company.industry }} · {{ vacancy.company.city }}</div></div>
+          <div><b>{{ vacancy.company.name }}</b><div class="small muted">{{ vacancy.company.tr('industry') }} · {{ vacancy.company.city_label }}</div></div>
         </div>
         <a class="btn btn-sm btn-block" href="{{ url_for('main.company_detail', company_id=vacancy.company.id) }}">{{ _('Компанияның барлық вакансиялары ({n})', n=vacancy.company.active_vacancies_count) }}</a>
       </div>

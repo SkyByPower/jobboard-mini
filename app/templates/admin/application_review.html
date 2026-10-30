@@ -35,7 +35,7 @@
     <div class="card reveal">
       <div style="display:flex;gap:12px;align-items:center">
         {{ logo(a.vacancy.company) }}
-        <div><a class="job-title" href="{{ url_for('main.vacancy_detail', vacancy_id=a.vacancy.id) }}">{{ a.vacancy.title }}</a><div class="small muted">{{ a.vacancy.company.name }} · {{ a.vacancy.salary_label }}</div></div>
+        <div><a class="job-title" href="{{ url_for('main.vacancy_detail', vacancy_id=a.vacancy.id) }}">{{ a.vacancy.tr('title') }}</a><div class="small muted">{{ a.vacancy.company.name }} · {{ a.vacancy.salary_label }}</div></div>
       </div>
     </div>
 

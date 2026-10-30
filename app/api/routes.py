@@ -76,6 +76,18 @@ def validate_vacancy_payload(data, partial=False):
         else:
             cleaned[field] = value.strip()
 
+    # орысша нұсқалары міндетті емес (null немесе "" — тазалау)
+    for field, (lo, hi) in {"title_ru": (3, 120), "description_ru": (30, 5000), "requirements_ru": (10, 3000)}.items():
+        if field not in data:
+            continue
+        value = data[field]
+        if value in (None, ""):
+            cleaned[field] = None
+        elif not isinstance(value, str) or not lo <= len(value.strip()) <= hi:
+            errors[field] = f"Мәтін, ұзындығы {lo}–{hi}."
+        else:
+            cleaned[field] = value.strip()
+
     if "company_id" in data or not partial:
         company = db.session.get(Company, data.get("company_id")) if isinstance(data.get("company_id"), int) else None
         if company is None:

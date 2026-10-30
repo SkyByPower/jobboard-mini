@@ -23,7 +23,7 @@
       <div class="app-row">
         {{ logo(a.vacancy.company) }}
         <div class="grow">
-          <a class="job-title" style="display:block" href="{{ url_for('main.vacancy_detail', vacancy_id=a.vacancy.id) }}">{{ a.vacancy.title }}</a>
+          <a class="job-title" style="display:block" href="{{ url_for('main.vacancy_detail', vacancy_id=a.vacancy.id) }}">{{ a.vacancy.tr('title') }}</a>
           <div class="small muted">{{ a.vacancy.company.name }} · {{ a.created_at|date('%d.%m.%Y %H:%M') }}</div>
         </div>
         {{ status_badge(a) }}

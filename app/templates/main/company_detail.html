@@ -12,8 +12,8 @@
       <div style="flex:1;min-width:220px">
         <h1>{{ company.name }}</h1>
         <div class="tags">
-          <span class="tag"><i class="bi bi-tag"></i>{{ company.industry }}</span>
-          <span class="tag"><i class="bi bi-geo-alt"></i>{{ company.city }}</span>
+          <span class="tag"><i class="bi bi-tag"></i>{{ company.tr('industry') }}</span>
+          <span class="tag"><i class="bi bi-geo-alt"></i>{{ company.city_label }}</span>
           {% if company.website %}<a class="tag" href="{{ company.website }}" target="_blank" rel="noopener noreferrer"><i class="bi bi-globe2"></i>{{ _('Веб-сайт') }}</a>{% endif %}
           {% if company.email %}<span class="tag"><i class="bi bi-envelope"></i>{{ company.email }}</span>{% endif %}
         </div>
@@ -22,7 +22,7 @@
         <a class="btn" href="{{ url_for('admin.company_edit', company_id=company.id) }}"><i class="bi bi-pencil"></i> {{ _('Өңдеу') }}</a>
       {% endif %}
     </div>
-    <p class="muted" style="margin:20px 0 0;white-space:pre-line">{{ company.description }}</p>
+    <p class="muted" style="margin:20px 0 0;white-space:pre-line">{{ company.tr('description') }}</p>
   </div>
 
   <h2 class="reveal">{{ _('Ашық вакансиялар') }} <span class="muted">({{ items|length }})</span></h2>

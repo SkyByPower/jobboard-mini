@@ -16,8 +16,8 @@
     <tbody>
       {% for c in pagination.items %}
       <tr>
-        <td><div class="ent">{{ logo(c) }}<div><a class="row-link" href="{{ url_for('main.company_detail', company_id=c.id) }}">{{ c.name }}</a><span class="small muted">{{ c.industry }}</span></div></div></td>
-        <td>{{ c.city }}</td>
+        <td><div class="ent">{{ logo(c) }}<div><a class="row-link" href="{{ url_for('main.company_detail', company_id=c.id) }}">{{ c.name }}</a><span class="small muted">{{ c.tr('industry') }}</span></div></div></td>
+        <td>{{ c.city_label }}</td>
         <td class="small">{{ c.email or '—' }}<br><span class="muted">{{ c.phone or '' }}</span></td>
         <td><b>{{ c.vacancies.count() }}</b></td>
         <td>

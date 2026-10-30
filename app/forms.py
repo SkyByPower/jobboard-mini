@@ -30,6 +30,7 @@ PHONE_RE = r"^\+?[0-9\s\-()]{10,20}$"
 PHONE_MSG = _l("Телефон форматы: +7 700 123 45 67")
 REQ = _l("Бұл өріс міндетті.")
 BAD_EMAIL = _l("Email дұрыс емес.")
+RU_HINT = _l("Міндетті емес — бос болса, қазақша нұсқасы көрсетіледі.")
 
 
 def strip(value):
@@ -94,7 +95,13 @@ class CompanyForm(FlaskForm):
     name = StringField(_l("Атауы"), filters=[strip], validators=[DataRequired(REQ), length(2, 100)])
     industry = StringField(_l("Сала"), filters=[strip], validators=[DataRequired(REQ), length(2, 60)])
     city = StringField(_l("Қала"), filters=[strip], validators=[DataRequired(REQ), length(2, 60)])
+    industry_ru = StringField(
+        _l("Сала (орысша)"), filters=[strip], validators=[Optional(), length(2, 60)], description=RU_HINT
+    )
     description = TextAreaField(_l("Сипаттама"), filters=[strip], validators=[DataRequired(REQ), length(20, 3000)])
+    description_ru = TextAreaField(
+        _l("Сипаттама (орысша)"), filters=[strip], validators=[Optional(), length(20, 3000)], description=RU_HINT
+    )
     website = StringField(
         _l("Веб-сайт"),
         filters=[strip],
@@ -121,6 +128,9 @@ SALARY_RANGE = _l("0 – 10 000 000 аралығында болуы керек."
 
 class VacancyForm(FlaskForm):
     title = StringField(_l("Лауазым"), filters=[strip], validators=[DataRequired(REQ), length(3, 120)])
+    title_ru = StringField(
+        _l("Лауазым (орысша)"), filters=[strip], validators=[Optional(), length(3, 120)], description=RU_HINT
+    )
     company_id = SelectField(_l("Компания"), coerce=int, validators=[DataRequired(_l("Компанияны таңдаңыз."))])
     city = StringField(_l("Қала"), filters=[strip], validators=[DataRequired(REQ), length(2, 60)])
     employment_type = SelectField(_l("Жұмыс түрі"), choices=translated_choices(Vacancy.EMPLOYMENT_TYPES))
@@ -132,8 +142,14 @@ class VacancyForm(FlaskForm):
         _l("Жалақы (дейін, ₸)"), validators=[Optional(), NumberRange(0, 10_000_000, SALARY_RANGE)]
     )
     description = TextAreaField(_l("Сипаттама"), filters=[strip], validators=[DataRequired(REQ), length(30, 5000)])
+    description_ru = TextAreaField(
+        _l("Сипаттама (орысша)"), filters=[strip], validators=[Optional(), length(30, 5000)], description=RU_HINT
+    )
     requirements = TextAreaField(
         _l("Талаптар (әр жолға біреуден)"), filters=[strip], validators=[DataRequired(REQ), length(10, 3000)]
+    )
+    requirements_ru = TextAreaField(
+        _l("Талаптар (орысша)"), filters=[strip], validators=[Optional(), length(10, 3000)], description=RU_HINT
     )
     is_active = BooleanField(_l("Белсенді (өтінім қабылданады)"), default=True)
     submit = SubmitField(_l("Сақтау"))
