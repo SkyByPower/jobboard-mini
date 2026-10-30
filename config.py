@@ -22,6 +22,9 @@ class Config:
     VACANCIES_PER_PAGE = 6
     ADMIN_PER_PAGE = 10
 
+    # freeze.py статикалық көшірме жасағанда ғана қосылады (GitHub Pages)
+    STATIC_EXPORT = False
+
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
     REMEMBER_COOKIE_HTTPONLY = True

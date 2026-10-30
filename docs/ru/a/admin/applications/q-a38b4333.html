@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Отклики · JumysBoard</title>
+  <meta name="description" content="JumysBoard — Job Board Mini: вакансии, компании и онлайн-отклики.">
+  <script>
+    /* тема жыпылықтамау үшін бет салынбай тұрып қойылады */
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem("theme"); } catch (e) {}
+      if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+    window.I18N = {"\u0415\u0448\u0442\u0435\u04a3\u0435 \u0442\u0430\u0431\u044b\u043b\u043c\u0430\u0434\u044b": "\u041d\u0438\u0447\u0435\u0433\u043e \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e", "\u0416\u0430\u0431\u0443": "\u0417\u0430\u043a\u0440\u044b\u0442\u044c", "\u041a\u04e9\u0448\u0456\u0440\u0443 \u043c\u04af\u043c\u043a\u0456\u043d \u0431\u043e\u043b\u043c\u0430\u0434\u044b": "\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0441\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c", "\u041a\u04e9\u0448\u0456\u0440\u0456\u043b\u0434\u0456!": "\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e!", "\u0421\u0430\u049b\u0442\u0430\u043b\u0493\u0430\u043d\u0434\u0430\u0440\u0434\u0430\u043d \u0430\u043b\u044b\u043d\u0434\u044b": "\u0423\u0434\u0430\u043b\u0435\u043d\u043e \u0438\u0437 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u043e\u0433\u043e", "\u0421\u0430\u049b\u0442\u0430\u043b\u0493\u0430\u043d\u0434\u0430\u0440\u0493\u0430 \u049b\u043e\u0441\u044b\u043b\u0434\u044b": "\u0414\u043e\u0431\u0430\u0432\u043b\u0435\u043d\u043e \u0432 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u043e\u0435", "\u0421\u0435\u043d\u0456\u043c\u0434\u0456\u0441\u0456\u0437 \u0431\u0435?": "\u0412\u044b \u0443\u0432\u0435\u0440\u0435\u043d\u044b?", "\u0421\u04af\u0437\u0433\u0456 \u0448\u0430\u0440\u0442\u0442\u0430\u0440\u044b\u043d \u04e9\u0437\u0433\u0435\u0440\u0442\u0456\u043f \u043a\u04e9\u0440\u0456\u04a3\u0456\u0437.": "\u041f\u043e\u043f\u0440\u043e\u0431\u0443\u0439\u0442\u0435 \u0438\u0437\u043c\u0435\u043d\u0438\u0442\u044c \u0443\u0441\u043b\u043e\u0432\u0438\u044f \u0444\u0438\u043b\u044c\u0442\u0440\u0430.", "\u0421\u04af\u0437\u0433\u0456\u043d\u0456 \u0442\u0430\u0437\u0430\u043b\u0430\u0443": "\u0421\u0431\u0440\u043e\u0441\u0438\u0442\u044c \u0444\u0438\u043b\u044c\u0442\u0440\u044b", "\u0422\u0435\u043a PDF \u0444\u0430\u0439\u043b\u0434\u0430\u0440 \u0440\u04b1\u049b\u0441\u0430\u0442 \u0435\u0442\u0456\u043b\u0435\u0434\u0456.": "\u0420\u0430\u0437\u0440\u0435\u0448\u0435\u043d\u044b \u0442\u043e\u043b\u044c\u043a\u043e PDF-\u0444\u0430\u0439\u043b\u044b.", "\u0424\u0430\u0439\u043b {mb} \u041c\u0411-\u0442\u0430\u043d \u0430\u0441\u043f\u0430\u0443\u044b \u043a\u0435\u0440\u0435\u043a.": "\u0424\u0430\u0439\u043b \u043d\u0435 \u0434\u043e\u043b\u0436\u0435\u043d \u043f\u0440\u0435\u0432\u044b\u0448\u0430\u0442\u044c {mb} \u041c\u0411.", "\u049a\u0430\u0442\u0435 \u043e\u0440\u044b\u043d \u0430\u043b\u0434\u044b, \u049b\u0430\u0439\u0442\u0430\u043b\u0430\u043f \u043a\u04e9\u0440\u0456\u04a3\u0456\u0437.": "\u041f\u0440\u043e\u0438\u0437\u043e\u0448\u043b\u0430 \u043e\u0448\u0438\u0431\u043a\u0430, \u043f\u043e\u043f\u0440\u043e\u0431\u0443\u0439\u0442\u0435 \u0435\u0449\u0451 \u0440\u0430\u0437."};
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Unbounded:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../../../../static/css/style.css">
+  <link rel="icon" href="../../../../static/img/favicon.svg" type="image/svg+xml">
+<script>window.STATIC_SITE = {"root": "../../../../", "lang": "ru", "state": "admin", "path": "/admin/applications"};</script>
+</head>
+<body>
+  <div class="scroll-progress"></div>
+  <div class="bg-scene" aria-hidden="true">
+    <div class="grid"></div>
+    <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  </div>
+
+  
+  <header class="nav">
+    <div class="container">
+      <a class="brand" href="../../">
+        <span class="brand-mark"><i class="bi bi-briefcase-fill"></i></span>
+        <span>JumysBoard<small>Job Board Mini</small></span>
+      </a>
+      <nav class="nav-links">
+        <a href="../../" class="">Главная</a>
+        <a href="../../vacancies/" class="">Вакансии</a>
+        <a href="../../companies/" class="">Компании</a>
+        
+          
+            <a href="../" class="active">Админ-панель</a>
+          
+        
+      </nav>
+      <div class="nav-right">
+        <div class="lang-switch" data-lang="ru" role="group" aria-label="Язык">
+          <span class="lang-pill" aria-hidden="true"></span>
+          
+            <a href="../../../../a/admin/applications/q-a38b4333.html" data-code="kk" class="" hreflang="kk" >ҚАЗ</a>
+          
+            <a href="q-a38b4333.html" data-code="ru" class="on" hreflang="ru" aria-current="true">РУС</a>
+          
+        </div>
+        <button class="icon-btn theme-toggle" id="themeToggle" type="button" aria-label="Сменить тему"><i class="bi bi-moon-stars"></i></button>
+        
+          <div class="user-menu">
+            <button class="user-chip" type="button" aria-haspopup="true">
+              <span class="avatar">A</span>
+              <span class="name">Admin</span>
+              <i class="bi bi-chevron-down small"></i>
+            </button>
+            <div class="dropdown">
+              <div class="head">
+                <strong>Admin</strong>
+                <span class="small muted">admin@jobboard.kz</span>
+              </div>
+              <div class="sep"></div>
+              <a href="../../auth/profile/"><i class="bi bi-person"></i>Профиль</a>
+              
+                <a href="../"><i class="bi bi-speedometer2"></i>Панель управления</a>
+                <a href="./"><i class="bi bi-inbox"></i>Отклики</a>
+              
+              <div class="sep"></div>
+              <form method="post" data-static-action="/auth/logout">
+                <input type="hidden" name="csrf_token" value="ImY5MDU4NjU3YWJhNTEzNGIyMjJjOGMwMTYzZGI1NTg4MzYwMTBmNGMi.auRpag.ayKymabiEsUK5gVkV8ZDWNC2uy8">
+                <button type="submit"><i class="bi bi-box-arrow-right"></i>Выйти</button>
+              </form>
+            </div>
+          </div>
+        
+        <button class="icon-btn nav-burger" type="button" aria-label="Меню"><i class="bi bi-list"></i></button>
+      </div>
+    </div>
+  </header>
+
+  
+    <div class="toasts" aria-live="polite">
+      
+    </div>
+  
+
+  <main class="page-enter ">
+    
+
+<div class="container admin">
+  <aside class="card side-nav reveal from-left">
+    <div class="label">Управление</div>
+    <a href="../" class=""><i class="bi bi-speedometer2"></i>Дашборд</a>
+    <a href="../vacancies/" class=""><i class="bi bi-briefcase"></i>Вакансии</a>
+    <a href="../companies/" class=""><i class="bi bi-buildings"></i>Компании</a>
+    <a href="./" class="active"><i class="bi bi-inbox"></i>Отклики
+      </a>
+    <a href="../users/" class=""><i class="bi bi-people"></i>Пользователи</a>
+    <div class="label" style="margin-top:10px">Быстро</div>
+    <a href="../vacancies/new/"><i class="bi bi-plus-circle"></i>Новая вакансия</a>
+    <a href="../companies/new/"><i class="bi bi-building-add"></i>Новая компания</a>
+  </aside>
+  <section>
+    
+<div class="admin-head reveal">
+  <div>
+    <h1>Отклики <span class="muted" style="font-size:1rem">(0)</span></h1>
+    <p class="muted" style="margin:4px 0 0">Вакансия: <b>Data Analyst</b> · <a href="./">снять фильтр</a></p>
+  </div>
+</div>
+
+<form class="search-inline reveal" method="get" style="margin-bottom:12px" data-autosubmit>
+  <input type="hidden" name="vacancy" value="3">
+  <div class="input-icon"><i class="bi bi-search"></i><input type="search" name="q" value="" placeholder="Кандидат, email или вакансия..." maxlength="100" style="width:100%"></div>
+  <select name="status" aria-label="Статус">
+    <option value="">Все статусы</option>
+    <option value="pending" selected>Ожидает</option><option value="reviewing" >На рассмотрении</option><option value="accepted" >Принят</option><option value="rejected" >Отклонён</option>
+  </select>
+  <select name="sort" aria-label="Сортировка">
+    <option value="new" selected>Новые</option><option value="old" >Старые</option><option value="status" >Статус</option>
+  </select>
+  <button class="btn" type="submit">Поиск</button>
+</form>
+
+<div class="table-wrap reveal">
+  <table class="table">
+    <thead><tr><th>Кандидат</th><th>Вакансия</th><th>Дата</th><th>Статус</th><th></th></tr></thead>
+    <tbody>
+      
+      <tr><td colspan="5" class="muted" style="text-align:center;padding:40px">Отклики не найдены.</td></tr>
+      
+    </tbody>
+  </table>
+</div>
+
+  
+
+
+  </section>
+</div>
+
+  </main>
+
+  
+  <footer class="footer">
+    <div class="container">
+      <div class="brand">
+        <span class="brand-mark"><i class="bi bi-briefcase-fill"></i></span>
+        <span>JumysBoard<small>© 2026 · учебный проект на Flask</small></span>
+      </div>
+      <div class="footer-links">
+        <a href="../../vacancies/">Вакансии</a>
+        <a href="../../companies/">Компании</a>
+        <a href="../../api/vacancies.json">API</a>
+      </div>
+    </div>
+  </footer>
+  
+
+  <button class="icon-btn to-top" type="button" aria-label="Наверх"><i class="bi bi-arrow-up"></i></button>
+
+  <div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="backdrop" data-close-modal></div>
+    <div class="box">
+      <div class="m-ico"><i class="bi bi-trash3"></i></div>
+      <h3 id="confirmTitle">Вы уверены?</h3>
+      <p class="muted" id="confirmText"></p>
+      <div class="m-actions">
+        <button class="btn" type="button" data-close-modal>Отмена</button>
+        <button class="btn btn-danger" type="button" id="confirmYes" style="background:var(--danger);color:#fff;border-color:var(--danger)">Да, подтверждаю</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../../../static/js/main.js"></script>
+  
+<script src="../../../../static/js/static.js"></script>
+</body>
+</html>

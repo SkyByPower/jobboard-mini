@@ -6,7 +6,8 @@ Flask негізіндегі вакансиялар тақтасы: компан
 өтініш жібереді, әкімші өтініштерді қарап, шешім шығарады. Интерфейс анимациялары бар заманауи дизайнмен
 жасалған: қараңғы және ашық тақырыптар, мобильді нұсқа.
 
-**Демо бет (GitHub Pages):** https://skybypower.github.io/jobboard-mini/
+**Онлайн демо (GitHub Pages):** https://skybypower.github.io/jobboard-mini/ — сайттың толық статикалық көшірмесі
+(кіру: `admin / admin123` немесе `aruzhan / user123`). Жоба туралы бет: https://skybypower.github.io/jobboard-mini/docs/about/
 
 ![Басты бет](docs/screenshots/01-home.png)
 
@@ -219,6 +220,21 @@ curl -X POST http://127.0.0.1:5000/api/vacancies -H "X-API-Key: admin-demo-token
 
 **Postman:** `postman_collection.json` файлын импорттаңыз — айнымалылар (`base_url`, `admin_key`, `user_key`)
 және автоматты тексерулер (`pm.test`) дайын.
+
+## Онлайн демо (GitHub Pages)
+
+GitHub Pages тек статикалық файлдарды береді, сондықтан `freeze.py` сайттың барлық беттерін HTML ретінде `docs/` ішіне сақтайды:
+
+```bash
+python freeze.py
+```
+
+- Әр бет үш күйде (қонақ, `aruzhan`, `admin`) және екі тілде сақталады (~580 бет); сілтемелер салыстырмалы.
+- Вакансияларды іздеу, сүзгі, сұрыптау және беттеу браузерде жұмыс істейді (`app/static/js/static.js`).
+- Кіру демо аккаунттармен ғана, ал формалар (өтініш, CRUD, өшіру) деректерді өзгертпейді — бұл толық нұсқада ғана.
+- Түбірдегі `index.html` пен `404.html` Pages репозиторий түбірінен берілгенде `docs/` бетіне жеткізеді.
+
+Жобаны өзгерткеннен кейін `python freeze.py` іске қосып, `docs/` өзгерістерін commit етіңіз.
 
 ## Тесттер
 

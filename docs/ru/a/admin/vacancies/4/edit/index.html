@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Редактирование вакансии · JumysBoard</title>
+  <meta name="description" content="JumysBoard — Job Board Mini: вакансии, компании и онлайн-отклики.">
+  <script>
+    /* тема жыпылықтамау үшін бет салынбай тұрып қойылады */
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem("theme"); } catch (e) {}
+      if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+    window.I18N = {"\u0415\u0448\u0442\u0435\u04a3\u0435 \u0442\u0430\u0431\u044b\u043b\u043c\u0430\u0434\u044b": "\u041d\u0438\u0447\u0435\u0433\u043e \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e", "\u0416\u0430\u0431\u0443": "\u0417\u0430\u043a\u0440\u044b\u0442\u044c", "\u041a\u04e9\u0448\u0456\u0440\u0443 \u043c\u04af\u043c\u043a\u0456\u043d \u0431\u043e\u043b\u043c\u0430\u0434\u044b": "\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0441\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c", "\u041a\u04e9\u0448\u0456\u0440\u0456\u043b\u0434\u0456!": "\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e!", "\u0421\u0430\u049b\u0442\u0430\u043b\u0493\u0430\u043d\u0434\u0430\u0440\u0434\u0430\u043d \u0430\u043b\u044b\u043d\u0434\u044b": "\u0423\u0434\u0430\u043b\u0435\u043d\u043e \u0438\u0437 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u043e\u0433\u043e", "\u0421\u0430\u049b\u0442\u0430\u043b\u0493\u0430\u043d\u0434\u0430\u0440\u0493\u0430 \u049b\u043e\u0441\u044b\u043b\u0434\u044b": "\u0414\u043e\u0431\u0430\u0432\u043b\u0435\u043d\u043e \u0432 \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u043e\u0435", "\u0421\u0435\u043d\u0456\u043c\u0434\u0456\u0441\u0456\u0437 \u0431\u0435?": "\u0412\u044b \u0443\u0432\u0435\u0440\u0435\u043d\u044b?", "\u0421\u04af\u0437\u0433\u0456 \u0448\u0430\u0440\u0442\u0442\u0430\u0440\u044b\u043d \u04e9\u0437\u0433\u0435\u0440\u0442\u0456\u043f \u043a\u04e9\u0440\u0456\u04a3\u0456\u0437.": "\u041f\u043e\u043f\u0440\u043e\u0431\u0443\u0439\u0442\u0435 \u0438\u0437\u043c\u0435\u043d\u0438\u0442\u044c \u0443\u0441\u043b\u043e\u0432\u0438\u044f \u0444\u0438\u043b\u044c\u0442\u0440\u0430.", "\u0421\u04af\u0437\u0433\u0456\u043d\u0456 \u0442\u0430\u0437\u0430\u043b\u0430\u0443": "\u0421\u0431\u0440\u043e\u0441\u0438\u0442\u044c \u0444\u0438\u043b\u044c\u0442\u0440\u044b", "\u0422\u0435\u043a PDF \u0444\u0430\u0439\u043b\u0434\u0430\u0440 \u0440\u04b1\u049b\u0441\u0430\u0442 \u0435\u0442\u0456\u043b\u0435\u0434\u0456.": "\u0420\u0430\u0437\u0440\u0435\u0448\u0435\u043d\u044b \u0442\u043e\u043b\u044c\u043a\u043e PDF-\u0444\u0430\u0439\u043b\u044b.", "\u0424\u0430\u0439\u043b {mb} \u041c\u0411-\u0442\u0430\u043d \u0430\u0441\u043f\u0430\u0443\u044b \u043a\u0435\u0440\u0435\u043a.": "\u0424\u0430\u0439\u043b \u043d\u0435 \u0434\u043e\u043b\u0436\u0435\u043d \u043f\u0440\u0435\u0432\u044b\u0448\u0430\u0442\u044c {mb} \u041c\u0411.", "\u049a\u0430\u0442\u0435 \u043e\u0440\u044b\u043d \u0430\u043b\u0434\u044b, \u049b\u0430\u0439\u0442\u0430\u043b\u0430\u043f \u043a\u04e9\u0440\u0456\u04a3\u0456\u0437.": "\u041f\u0440\u043e\u0438\u0437\u043e\u0448\u043b\u0430 \u043e\u0448\u0438\u0431\u043a\u0430, \u043f\u043e\u043f\u0440\u043e\u0431\u0443\u0439\u0442\u0435 \u0435\u0449\u0451 \u0440\u0430\u0437."};
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Unbounded:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../../../../../../static/css/style.css">
+  <link rel="icon" href="../../../../../../static/img/favicon.svg" type="image/svg+xml">
+<script>window.STATIC_SITE = {"root": "../../../../../../", "lang": "ru", "state": "admin", "path": "/admin/vacancies/4/edit"};</script>
+</head>
+<body>
+  <div class="scroll-progress"></div>
+  <div class="bg-scene" aria-hidden="true">
+    <div class="grid"></div>
+    <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  </div>
+
+  
+  <header class="nav">
+    <div class="container">
+      <a class="brand" href="../../../../">
+        <span class="brand-mark"><i class="bi bi-briefcase-fill"></i></span>
+        <span>JumysBoard<small>Job Board Mini</small></span>
+      </a>
+      <nav class="nav-links">
+        <a href="../../../../" class="">Главная</a>
+        <a href="../../../../vacancies/" class="">Вакансии</a>
+        <a href="../../../../companies/" class="">Компании</a>
+        
+          
+            <a href="../../../" class="active">Админ-панель</a>
+          
+        
+      </nav>
+      <div class="nav-right">
+        <div class="lang-switch" data-lang="ru" role="group" aria-label="Язык">
+          <span class="lang-pill" aria-hidden="true"></span>
+          
+            <a href="../../../../../../a/admin/vacancies/4/edit/" data-code="kk" class="" hreflang="kk" >ҚАЗ</a>
+          
+            <a href="./" data-code="ru" class="on" hreflang="ru" aria-current="true">РУС</a>
+          
+        </div>
+        <button class="icon-btn theme-toggle" id="themeToggle" type="button" aria-label="Сменить тему"><i class="bi bi-moon-stars"></i></button>
+        
+          <div class="user-menu">
+            <button class="user-chip" type="button" aria-haspopup="true">
+              <span class="avatar">A</span>
+              <span class="name">Admin</span>
+              <i class="bi bi-chevron-down small"></i>
+            </button>
+            <div class="dropdown">
+              <div class="head">
+                <strong>Admin</strong>
+                <span class="small muted">admin@jobboard.kz</span>
+              </div>
+              <div class="sep"></div>
+              <a href="../../../../auth/profile/"><i class="bi bi-person"></i>Профиль</a>
+              
+                <a href="../../../"><i class="bi bi-speedometer2"></i>Панель управления</a>
+                <a href="../../../applications/"><i class="bi bi-inbox"></i>Отклики</a>
+              
+              <div class="sep"></div>
+              <form method="post" data-static-action="/auth/logout">
+                <input type="hidden" name="csrf_token" value="ImY5MDU4NjU3YWJhNTEzNGIyMjJjOGMwMTYzZGI1NTg4MzYwMTBmNGMi.auRpag.ayKymabiEsUK5gVkV8ZDWNC2uy8">
+                <button type="submit"><i class="bi bi-box-arrow-right"></i>Выйти</button>
+              </form>
+            </div>
+          </div>
+        
+        <button class="icon-btn nav-burger" type="button" aria-label="Меню"><i class="bi bi-list"></i></button>
+      </div>
+    </div>
+  </header>
+
+  
+    <div class="toasts" aria-live="polite">
+      
+    </div>
+  
+
+  <main class="page-enter ">
+    
+
+<div class="container admin">
+  <aside class="card side-nav reveal from-left">
+    <div class="label">Управление</div>
+    <a href="../../../" class=""><i class="bi bi-speedometer2"></i>Дашборд</a>
+    <a href="../../" class="active"><i class="bi bi-briefcase"></i>Вакансии</a>
+    <a href="../../../companies/" class=""><i class="bi bi-buildings"></i>Компании</a>
+    <a href="../../../applications/" class=""><i class="bi bi-inbox"></i>Отклики
+      </a>
+    <a href="../../../users/" class=""><i class="bi bi-people"></i>Пользователи</a>
+    <div class="label" style="margin-top:10px">Быстро</div>
+    <a href="../../new/"><i class="bi bi-plus-circle"></i>Новая вакансия</a>
+    <a href="../../../companies/new/"><i class="bi bi-building-add"></i>Новая компания</a>
+  </aside>
+  <section>
+    
+<div class="admin-head reveal">
+  <div>
+    <div class="breadcrumb"><a href="../../">Вакансии</a><span>/</span><span>QA-инженер</span></div>
+    <h1>Редактирование вакансии</h1>
+  </div>
+</div>
+<form class="card reveal" method="post" novalidate data-static-action="/admin/vacancies/4/edit">
+  <input id="csrf_token" name="csrf_token" type="hidden" value="ImY5MDU4NjU3YWJhNTEzNGIyMjJjOGMwMTYzZGI1NTg4MzYwMTBmNGMi.auRpag.ayKymabiEsUK5gVkV8ZDWNC2uy8">
+  <div class="form-grid">
+    
+  <div class="field  ">
+    
+      <label for="title">Должность<span class="req">*</span></label>
+      
+      
+      
+        <input id="title" maxlength="120" minlength="3" name="title" placeholder="например, Python Backend-разработчик" required type="text" value="QA инженері">
+      
+    
+    
+    
+  </div>
+
+    
+  <div class="field  ">
+    
+      <label for="title_ru">Должность (на русском)</label>
+      
+      
+      
+        <input id="title_ru" maxlength="120" minlength="3" name="title_ru" placeholder="Python Backend-разработчик" type="text" value="QA-инженер">
+      
+    
+    <span class="hint">Необязательно — если пусто, показывается казахская версия.</span>
+    
+  </div>
+
+    
+  <div class="field  ">
+    
+      <label for="company_id">Компания<span class="req">*</span></label>
+      
+      
+      
+        <select id="company_id" name="company_id" placeholder="" required><option value="4">Altyn Health</option><option value="6">Baiterek Energy</option><option value="5">EduQaz</option><option value="3">Nomad Logistics</option><option value="1">Qazaq Pay</option><option selected value="2">Steppe Soft</option></select>
+      
+    
+    
+    
+  </div>
+
+    
+  <div class="field  ">
+    
+      <label for="city">Город<span class="req">*</span></label>
+      
+      
+      
+        <div class="input-icon">
+          <i class="bi bi-geo-alt"></i>
+          <input id="city" maxlength="60" minlength="2" name="city" placeholder="Алматы" required type="text" value="Астана">
+          
+        </div>
+      
+    
+    
+    
+  </div>
+
+    
+  <div class="field  ">
+    
+      <label for="employment_type">Тип занятости</label>
+      
+      
+      
+        <select id="employment_type" name="employment_type" placeholder=""><option selected value="full_time">Полный день</option><option value="part_time">Неполный день</option><option value="remote">Удалённо</option><option value="internship">Стажировка</option><option value="contract">Контракт</option></select>
+      
+    
+    
+    
+  </div>
+
+    
+  <div class="field  ">
+    
+      <label for="experience">Опыт</label>
+      
+      
+      
+        <select id="experience" name="experience" placeholder=""><option value="none">Без опыта</option><option selected value="junior">1–3 года</option><option value="middle">3–5 лет</option><option value="senior">5+ лет</option></select>
+      
+    
+    
+    
+  </div>
+
+    
+  <div class="field  ">
+    
+      <label for="salary_min">Зарплата (от, ₸)</label>
+      
+      
+      
+        <div class="input-icon">
+          <i class="bi bi-cash"></i>
+          <input id="salary_min" max="10000000" min="0" name="salary_min" placeholder="300000" step="10000" type="number" value="350000">
+          
+        </div>
+      
+    
+    
+    
+  </div>
+
+    
+  <div class="field  ">
+    
+      <label for="salary_max">Зарплата (до, ₸)</label>
+      
+      
+      
+        <div class="input-icon">
+          <i class="bi bi-cash-stack"></i>
+          <input id="salary_max" max="10000000" min="0" name="salary_max" placeholder="600000" step="10000" type="number" value="550000">
+          
+        </div>
+      
+    
+    
+    
+  </div>
+
+    
+  <div class="field  ">
+    
+      <label for="description">Описание<span class="req">*</span></label>
+      
+      
+      
+        <textarea id="description" maxlength="5000" minlength="30" name="description" placeholder="Обязанности, условия работы..." required rows="6">
+Steppe Soft командасы «QA инженері» лауазымына маман іздейді. Сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. Біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз.</textarea>
+      
+    
+    
+    
+  </div>
+
+    
+  <div class="field  ">
+    
+      <label for="description_ru">Описание (на русском)</label>
+      
+      
+      
+        <textarea id="description_ru" maxlength="5000" minlength="30" name="description_ru" placeholder="Обязанности, условия работы..." rows="6">
+Команда Steppe Soft ищет специалиста на позицию «QA-инженер». Вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. Мы ценим людей, нацеленных на результат и не боящихся учиться новому.</textarea>
+      
+    
+    <span class="hint">Необязательно — если пусто, показывается казахская версия.</span>
+    
+  </div>
+
+    
+  <div class="field  ">
+    
+      <label for="requirements">Требования (по одному в строке)<span class="req">*</span></label>
+      
+      
+      
+        <textarea id="requirements" maxlength="3000" minlength="10" name="requirements" placeholder="Python 3
+SQL
+Git" required rows="5">
+1 жылдан астам тәжірибе
+Негізгі құралдарды білу
+Жауапкершілік пен ұқыптылық
+Ағылшын тілі — оқу деңгейінде</textarea>
+      
+    
+    
+    
+  </div>
+
+    
+  <div class="field  ">
+    
+      <label for="requirements_ru">Требования (на русском)</label>
+      
+      
+      
+        <textarea id="requirements_ru" maxlength="3000" minlength="10" name="requirements_ru" placeholder="Python 3
+SQL
+Git" rows="5">
+Опыт работы от 1 года
+Знание основных инструментов
+Ответственность и аккуратность
+Английский — на уровне чтения</textarea>
+      
+    
+    <span class="hint">Необязательно — если пусто, показывается казахская версия.</span>
+    
+  </div>
+
+    
+  <div class="field full ">
+    
+      <label class="switch"><input checked id="is_active" name="is_active" type="checkbox" value="y"> Активна (отклики принимаются)</label>
+    
+    
+    
+  </div>
+
+  </div>
+  <div class="form-actions">
+    <a class="btn" href="../../">Отмена</a>
+    <button class="btn btn-primary" type="submit"><i class="bi bi-check2"></i> Сохранить</button>
+  </div>
+</form>
+
+  </section>
+</div>
+
+  </main>
+
+  
+  <footer class="footer">
+    <div class="container">
+      <div class="brand">
+        <span class="brand-mark"><i class="bi bi-briefcase-fill"></i></span>
+        <span>JumysBoard<small>© 2026 · учебный проект на Flask</small></span>
+      </div>
+      <div class="footer-links">
+        <a href="../../../../vacancies/">Вакансии</a>
+        <a href="../../../../companies/">Компании</a>
+        <a href="../../../../api/vacancies.json">API</a>
+      </div>
+    </div>
+  </footer>
+  
+
+  <button class="icon-btn to-top" type="button" aria-label="Наверх"><i class="bi bi-arrow-up"></i></button>
+
+  <div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="backdrop" data-close-modal></div>
+    <div class="box">
+      <div class="m-ico"><i class="bi bi-trash3"></i></div>
+      <h3 id="confirmTitle">Вы уверены?</h3>
+      <p class="muted" id="confirmText"></p>
+      <div class="m-actions">
+        <button class="btn" type="button" data-close-modal>Отмена</button>
+        <button class="btn btn-danger" type="button" id="confirmYes" style="background:var(--danger);color:#fff;border-color:var(--danger)">Да, подтверждаю</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../../../../../static/js/main.js"></script>
+  
+<script src="../../../../../../static/js/static.js"></script>
+</body>
+</html>

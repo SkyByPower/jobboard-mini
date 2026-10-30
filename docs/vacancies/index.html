@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Вакансиялар · JumysBoard</title>
+  <meta name="description" content="JumysBoard — Job Board Mini: вакансиялар, компаниялар және онлайн өтініштер.">
+  <script>
+    /* тема жыпылықтамау үшін бет салынбай тұрып қойылады */
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem("theme"); } catch (e) {}
+      if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+    window.I18N = {"\u0415\u0448\u0442\u0435\u04a3\u0435 \u0442\u0430\u0431\u044b\u043b\u043c\u0430\u0434\u044b": "\u0415\u0448\u0442\u0435\u04a3\u0435 \u0442\u0430\u0431\u044b\u043b\u043c\u0430\u0434\u044b", "\u0416\u0430\u0431\u0443": "\u0416\u0430\u0431\u0443", "\u041a\u04e9\u0448\u0456\u0440\u0443 \u043c\u04af\u043c\u043a\u0456\u043d \u0431\u043e\u043b\u043c\u0430\u0434\u044b": "\u041a\u04e9\u0448\u0456\u0440\u0443 \u043c\u04af\u043c\u043a\u0456\u043d \u0431\u043e\u043b\u043c\u0430\u0434\u044b", "\u041a\u04e9\u0448\u0456\u0440\u0456\u043b\u0434\u0456!": "\u041a\u04e9\u0448\u0456\u0440\u0456\u043b\u0434\u0456!", "\u0421\u0430\u049b\u0442\u0430\u043b\u0493\u0430\u043d\u0434\u0430\u0440\u0434\u0430\u043d \u0430\u043b\u044b\u043d\u0434\u044b": "\u0421\u0430\u049b\u0442\u0430\u043b\u0493\u0430\u043d\u0434\u0430\u0440\u0434\u0430\u043d \u0430\u043b\u044b\u043d\u0434\u044b", "\u0421\u0430\u049b\u0442\u0430\u043b\u0493\u0430\u043d\u0434\u0430\u0440\u0493\u0430 \u049b\u043e\u0441\u044b\u043b\u0434\u044b": "\u0421\u0430\u049b\u0442\u0430\u043b\u0493\u0430\u043d\u0434\u0430\u0440\u0493\u0430 \u049b\u043e\u0441\u044b\u043b\u0434\u044b", "\u0421\u0435\u043d\u0456\u043c\u0434\u0456\u0441\u0456\u0437 \u0431\u0435?": "\u0421\u0435\u043d\u0456\u043c\u0434\u0456\u0441\u0456\u0437 \u0431\u0435?", "\u0421\u04af\u0437\u0433\u0456 \u0448\u0430\u0440\u0442\u0442\u0430\u0440\u044b\u043d \u04e9\u0437\u0433\u0435\u0440\u0442\u0456\u043f \u043a\u04e9\u0440\u0456\u04a3\u0456\u0437.": "\u0421\u04af\u0437\u0433\u0456 \u0448\u0430\u0440\u0442\u0442\u0430\u0440\u044b\u043d \u04e9\u0437\u0433\u0435\u0440\u0442\u0456\u043f \u043a\u04e9\u0440\u0456\u04a3\u0456\u0437.", "\u0421\u04af\u0437\u0433\u0456\u043d\u0456 \u0442\u0430\u0437\u0430\u043b\u0430\u0443": "\u0421\u04af\u0437\u0433\u0456\u043d\u0456 \u0442\u0430\u0437\u0430\u043b\u0430\u0443", "\u0422\u0435\u043a PDF \u0444\u0430\u0439\u043b\u0434\u0430\u0440 \u0440\u04b1\u049b\u0441\u0430\u0442 \u0435\u0442\u0456\u043b\u0435\u0434\u0456.": "\u0422\u0435\u043a PDF \u0444\u0430\u0439\u043b\u0434\u0430\u0440 \u0440\u04b1\u049b\u0441\u0430\u0442 \u0435\u0442\u0456\u043b\u0435\u0434\u0456.", "\u0424\u0430\u0439\u043b {mb} \u041c\u0411-\u0442\u0430\u043d \u0430\u0441\u043f\u0430\u0443\u044b \u043a\u0435\u0440\u0435\u043a.": "\u0424\u0430\u0439\u043b {mb} \u041c\u0411-\u0442\u0430\u043d \u0430\u0441\u043f\u0430\u0443\u044b \u043a\u0435\u0440\u0435\u043a.", "\u049a\u0430\u0442\u0435 \u043e\u0440\u044b\u043d \u0430\u043b\u0434\u044b, \u049b\u0430\u0439\u0442\u0430\u043b\u0430\u043f \u043a\u04e9\u0440\u0456\u04a3\u0456\u0437.": "\u049a\u0430\u0442\u0435 \u043e\u0440\u044b\u043d \u0430\u043b\u0434\u044b, \u049b\u0430\u0439\u0442\u0430\u043b\u0430\u043f \u043a\u04e9\u0440\u0456\u04a3\u0456\u0437."};
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Unbounded:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <link rel="icon" href="../static/img/favicon.svg" type="image/svg+xml">
+<script>window.STATIC_SITE = {"root": "../", "lang": "kk", "state": "guest", "path": "/vacancies"};</script>
+</head>
+<body>
+  <div class="scroll-progress"></div>
+  <div class="bg-scene" aria-hidden="true">
+    <div class="grid"></div>
+    <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  </div>
+
+  
+  <header class="nav">
+    <div class="container">
+      <a class="brand" href="../">
+        <span class="brand-mark"><i class="bi bi-briefcase-fill"></i></span>
+        <span>JumysBoard<small>Job Board Mini</small></span>
+      </a>
+      <nav class="nav-links">
+        <a href="../" class="">Басты бет</a>
+        <a href="./" class="active">Вакансиялар</a>
+        <a href="../companies/" class="">Компаниялар</a>
+        
+          <a class="mobile-only" href="../auth/login/">Кіру</a>
+          <a class="mobile-only" href="../auth/register/">Тіркелу</a>
+        
+      </nav>
+      <div class="nav-right">
+        <div class="lang-switch" data-lang="kk" role="group" aria-label="Тіл">
+          <span class="lang-pill" aria-hidden="true"></span>
+          
+            <a href="./" data-code="kk" class="on" hreflang="kk" aria-current="true">ҚАЗ</a>
+          
+            <a href="../ru/vacancies/" data-code="ru" class="" hreflang="ru" >РУС</a>
+          
+        </div>
+        <button class="icon-btn theme-toggle" id="themeToggle" type="button" aria-label="Тақырыпты ауыстыру"><i class="bi bi-moon-stars"></i></button>
+        
+          <a class="btn btn-ghost" href="../auth/login/">Кіру</a>
+          <a class="btn btn-primary" href="../auth/register/">Тіркелу</a>
+        
+        <button class="icon-btn nav-burger" type="button" aria-label="Мәзір"><i class="bi bi-list"></i></button>
+      </div>
+    </div>
+  </header>
+
+  
+    <div class="toasts" aria-live="polite">
+      
+    </div>
+  
+
+  <main class="page-enter ">
+    
+
+<div class="container">
+  <div class="page-head reveal">
+    <h1>Барлық <span class="grad-text">вакансиялар</span></h1>
+    <p class="muted">Іздеу, сүзгі және сұрыптау арқылы өзіңізге лайықты жұмысты табыңыз.</p>
+  </div>
+
+  <form id="filterForm" method="get" action="./" data-autosubmit>
+    <div class="search-bar reveal" style="max-width:none;margin:14px 0 26px">
+      <label class="seg"><i class="bi bi-search"></i><input name="q" value="" placeholder="Лауазым, сипаттама немесе компания..." maxlength="100" aria-label="Іздеу"></label>
+      <label class="seg" style="flex:.5"><i class="bi bi-geo-alt"></i>
+        <select name="city" aria-label="Қала">
+          <option value="">Барлық қала</option>
+          <option value="Алматы" >Алматы</option><option value="Астана" >Астана</option><option value="Атырау" >Атырау</option><option value="Шымкент" >Шымкент</option><option value="Қарағанды" >Қарағанды</option>
+        </select>
+      </label>
+      <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i> Іздеу</button>
+    </div>
+  </form>
+
+    <div class="layout">
+      <aside class="filters">
+        <div class="card reveal from-left">
+          <h4>Жұмыс түрі</h4>
+          
+            <label class="chk"><input form="filterForm" type="checkbox" name="type" value="full_time" > Толық күн</label>
+          
+            <label class="chk"><input form="filterForm" type="checkbox" name="type" value="part_time" > Толық емес күн</label>
+          
+            <label class="chk"><input form="filterForm" type="checkbox" name="type" value="remote" > Қашықтан</label>
+          
+            <label class="chk"><input form="filterForm" type="checkbox" name="type" value="internship" > Тағылымдама</label>
+          
+            <label class="chk"><input form="filterForm" type="checkbox" name="type" value="contract" > Келісімшарт</label>
+          
+        </div>
+        <div class="card reveal from-left" style="--i:1">
+          <h4>Тәжірибе</h4>
+          <div class="field">
+            <select form="filterForm" name="experience" aria-label="Тәжірибе">
+              <option value="">Кез келген</option>
+              <option value="none" >Тәжірибесіз</option><option value="junior" >1–3 жыл</option><option value="middle" >3–5 жыл</option><option value="senior" >5+ жыл</option>
+            </select>
+          </div>
+          <h4 style="margin-top:18px">Компания</h4>
+          <div class="field">
+            <select form="filterForm" name="company" aria-label="Компания">
+              <option value="">Барлығы</option>
+              <option value="4" >Altyn Health</option><option value="6" >Baiterek Energy</option><option value="5" >EduQaz</option><option value="3" >Nomad Logistics</option><option value="1" >Qazaq Pay</option><option value="2" >Steppe Soft</option>
+            </select>
+          </div>
+          <h4 style="margin-top:18px">Жалақы (кемінде, ₸)</h4>
+          <div class="field">
+            <input form="filterForm" type="number" name="salary_from" min="0" max="10000000" step="50000" value="" placeholder="мысалы, 400000">
+          </div>
+          <input form="filterForm" type="hidden" name="sort" value="new">
+          <div style="display:flex;gap:8px;margin-top:18px">
+            <button form="filterForm" class="btn btn-primary btn-sm" style="flex:1" type="submit">Қолдану</button>
+            <a class="btn btn-sm" href="./">Тазалау</a>
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="toolbar reveal">
+          <div class="count"><b>15</b> вакансия табылды</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <button class="btn btn-sm filter-toggle" type="button"><i class="bi bi-sliders"></i> Сүзгі</button>
+            <div class="seg-control" role="group" aria-label="Сұрыптау">
+              
+                <a class="on" href="./?sort=new">Жаңалары</a>
+              
+                <a class="" href="./?sort=old">Ескілері</a>
+              
+                <a class="" href="./?sort=salary_desc">Жалақы ↓</a>
+              
+                <a class="" href="./?sort=salary_asc">Жалақы ↑</a>
+              
+                <a class="" href="./?sort=title">Атауы А–Я</a>
+              
+            </div>
+          </div>
+        </div>
+
+        
+        
+        
+        
+        
+        
+        
+
+        
+          <div class="grid grid-2" data-stagger>
+            
+  <article class="card spotlight job reveal" data-id="1" data-city="Алматы" data-type="full_time"
+    data-exp="middle" data-company="1" data-created="1793264084"
+    data-sal-hi="1100000" data-sal-lo="700000"
+    data-title="Python Backend әзірлеуші" data-search="python backend әзірлеуші python backend-разработчик qazaq pay командасы «python backend әзірлеуші» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда qazaq pay ищет специалиста на позицию «python backend-разработчик». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. qazaq pay">
+    <div class="job-head">
+      <span class="logo " style="--h: 120">QP</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="1/">Python Backend әзірлеуші</a></h3>
+        <div class="job-company">Qazaq Pay</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-full_time"><i class="bi bi-clock"></i>Толық күн</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Алматы</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>3–5 жыл</span>
+    </div>
+    <div class="job-salary grad-text">700 000 – 1 100 000 ₸</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 20 сағ бұрын</span>
+      <span><i class="bi bi-people"></i> 0 өтініш</span>
+    </div>
+  </article>
+
+  <article class="card spotlight job reveal" data-id="2" data-city="Астана" data-type="remote"
+    data-exp="junior" data-company="2" data-created="1793152484"
+    data-sal-hi="700000" data-sal-lo="450000"
+    data-title="Frontend әзірлеуші (React)" data-search="frontend әзірлеуші (react) frontend-разработчик (react) steppe soft командасы «frontend әзірлеуші (react)» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда steppe soft ищет специалиста на позицию «frontend-разработчик (react)». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. steppe soft">
+    <div class="job-head">
+      <span class="logo " style="--h: 313">SS</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="2/">Frontend әзірлеуші (React)</a></h3>
+        <div class="job-company">Steppe Soft</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-remote"><i class="bi bi-wifi"></i>Қашықтан</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Астана</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>1–3 жыл</span>
+    </div>
+    <div class="job-salary grad-text">450 000 – 700 000 ₸</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 2 күн бұрын</span>
+      <span><i class="bi bi-people"></i> 1 өтініш</span>
+    </div>
+  </article>
+
+  <article class="card spotlight job reveal" data-id="3" data-city="Алматы" data-type="full_time"
+    data-exp="junior" data-company="1" data-created="1792990484"
+    data-sal-hi="800000" data-sal-lo="500000"
+    data-title="Data Analyst" data-search="data analyst data analyst qazaq pay командасы «data analyst» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда qazaq pay ищет специалиста на позицию «data analyst». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. qazaq pay">
+    <div class="job-head">
+      <span class="logo " style="--h: 120">QP</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="3/">Data Analyst</a></h3>
+        <div class="job-company">Qazaq Pay</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-full_time"><i class="bi bi-clock"></i>Толық күн</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Алматы</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>1–3 жыл</span>
+    </div>
+    <div class="job-salary grad-text">500 000 – 800 000 ₸</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 4 күн бұрын</span>
+      <span><i class="bi bi-people"></i> 1 өтініш</span>
+    </div>
+  </article>
+
+  <article class="card spotlight job reveal" data-id="4" data-city="Астана" data-type="full_time"
+    data-exp="junior" data-company="2" data-created="1792788884"
+    data-sal-hi="550000" data-sal-lo="350000"
+    data-title="QA инженері" data-search="qa инженері qa-инженер steppe soft командасы «qa инженері» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда steppe soft ищет специалиста на позицию «qa-инженер». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. steppe soft">
+    <div class="job-head">
+      <span class="logo " style="--h: 313">SS</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="4/">QA инженері</a></h3>
+        <div class="job-company">Steppe Soft</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-full_time"><i class="bi bi-clock"></i>Толық күн</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Астана</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>1–3 жыл</span>
+    </div>
+    <div class="job-salary grad-text">350 000 – 550 000 ₸</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 6 күн бұрын</span>
+      <span><i class="bi bi-people"></i> 1 өтініш</span>
+    </div>
+  </article>
+
+  <article class="card spotlight job reveal" data-id="5" data-city="Қарағанды" data-type="full_time"
+    data-exp="middle" data-company="3" data-created="1792619684"
+    data-sal-hi="600000" data-sal-lo="400000"
+    data-title="Логистика менеджері" data-search="логистика менеджері менеджер по логистике nomad logistics командасы «логистика менеджері» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда nomad logistics ищет специалиста на позицию «менеджер по логистике». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. nomad logistics">
+    <div class="job-head">
+      <span class="logo " style="--h: 104">NL</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="5/">Логистика менеджері</a></h3>
+        <div class="job-company">Nomad Logistics</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-full_time"><i class="bi bi-clock"></i>Толық күн</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Қарағанды</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>3–5 жыл</span>
+    </div>
+    <div class="job-salary grad-text">400 000 – 600 000 ₸</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 8 күн бұрын</span>
+      <span><i class="bi bi-people"></i> 0 өтініш</span>
+    </div>
+  </article>
+
+  <article class="card spotlight job reveal" data-id="6" data-city="Алматы" data-type="remote"
+    data-exp="middle" data-company="4" data-created="1792446884"
+    data-sal-hi="900000" data-sal-lo="600000"
+    data-title="Flutter әзірлеуші" data-search="flutter әзірлеуші flutter-разработчик altyn health командасы «flutter әзірлеуші» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда altyn health ищет специалиста на позицию «flutter-разработчик». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. altyn health">
+    <div class="job-head">
+      <span class="logo " style="--h: 70">AH</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="6/">Flutter әзірлеуші</a></h3>
+        <div class="job-company">Altyn Health</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-remote"><i class="bi bi-wifi"></i>Қашықтан</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Алматы</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>3–5 жыл</span>
+    </div>
+    <div class="job-salary grad-text">600 000 – 900 000 ₸</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 10 күн бұрын</span>
+      <span><i class="bi bi-people"></i> 1 өтініш</span>
+    </div>
+  </article>
+
+  <article class="card spotlight job reveal" data-id="7" data-city="Шымкент" data-type="part_time"
+    data-exp="junior" data-company="5" data-created="1792284884"
+    data-sal-hi="450000" data-sal-lo="300000"
+    data-title="UI/UX дизайнер" data-search="ui/ux дизайнер ui/ux-дизайнер eduqaz командасы «ui/ux дизайнер» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда eduqaz ищет специалиста на позицию «ui/ux-дизайнер». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. eduqaz">
+    <div class="job-head">
+      <span class="logo " style="--h: 82">E</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="7/">UI/UX дизайнер</a></h3>
+        <div class="job-company">EduQaz</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-part_time"><i class="bi bi-hourglass-split"></i>Толық емес күн</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Шымкент</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>1–3 жыл</span>
+    </div>
+    <div class="job-salary grad-text">300 000 – 450 000 ₸</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 12 күн бұрын</span>
+      <span><i class="bi bi-people"></i> 1 өтініш</span>
+    </div>
+  </article>
+
+  <article class="card spotlight job reveal" data-id="8" data-city="Астана" data-type="internship"
+    data-exp="none" data-company="2" data-created="1792115684"
+    data-sal-hi="200000" data-sal-lo="150000"
+    data-title="Python тағылымдамасы" data-search="python тағылымдамасы стажировка python steppe soft командасы «python тағылымдамасы» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда steppe soft ищет специалиста на позицию «стажировка python». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. steppe soft">
+    <div class="job-head">
+      <span class="logo " style="--h: 313">SS</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="8/">Python тағылымдамасы</a></h3>
+        <div class="job-company">Steppe Soft</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-internship"><i class="bi bi-mortarboard"></i>Тағылымдама</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Астана</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>Тәжірибесіз</span>
+    </div>
+    <div class="job-salary grad-text">150 000 – 200 000 ₸</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 14 күн бұрын</span>
+      <span><i class="bi bi-people"></i> 0 өтініш</span>
+    </div>
+  </article>
+
+  <article class="card spotlight job reveal" data-id="9" data-city="Алматы" data-type="full_time"
+    data-exp="senior" data-company="1" data-created="1791892484"
+    data-sal-hi="1800000" data-sal-lo="1200000"
+    data-title="DevOps инженері" data-search="devops инженері devops-инженер qazaq pay командасы «devops инженері» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда qazaq pay ищет специалиста на позицию «devops-инженер». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. qazaq pay">
+    <div class="job-head">
+      <span class="logo " style="--h: 120">QP</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="9/">DevOps инженері</a></h3>
+        <div class="job-company">Qazaq Pay</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-full_time"><i class="bi bi-clock"></i>Толық күн</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Алматы</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>5+ жыл</span>
+    </div>
+    <div class="job-salary grad-text">1 200 000 – 1 800 000 ₸</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 16 күн бұрын</span>
+      <span><i class="bi bi-people"></i> 1 өтініш</span>
+    </div>
+  </article>
+
+  <article class="card spotlight job reveal" data-id="10" data-city="Шымкент" data-type="remote"
+    data-exp="none" data-company="5" data-created="1791773684"
+    data-sal-hi="250000" data-sal-lo="250000"
+    data-title="Әдіскер (контент)" data-search="әдіскер (контент) методист (контент) eduqaz командасы «әдіскер (контент)» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда eduqaz ищет специалиста на позицию «методист (контент)». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. eduqaz">
+    <div class="job-head">
+      <span class="logo " style="--h: 82">E</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="10/">Әдіскер (контент)</a></h3>
+        <div class="job-company">EduQaz</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-remote"><i class="bi bi-wifi"></i>Қашықтан</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Шымкент</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>Тәжірибесіз</span>
+    </div>
+    <div class="job-salary grad-text">250 000 ₸-ден</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 18 күн бұрын</span>
+      <span><i class="bi bi-people"></i> 0 өтініш</span>
+    </div>
+  </article>
+
+  <article class="card spotlight job reveal" data-id="11" data-city="Атырау" data-type="contract"
+    data-exp="senior" data-company="6" data-created="1791543284"
+    data-sal-hi="1400000" data-sal-lo="900000"
+    data-title="Электр инженері" data-search="электр инженері инженер-электрик baiterek energy командасы «электр инженері» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда baiterek energy ищет специалиста на позицию «инженер-электрик». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. baiterek energy">
+    <div class="job-head">
+      <span class="logo " style="--h: 269">BE</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="11/">Электр инженері</a></h3>
+        <div class="job-company">Baiterek Energy</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-contract"><i class="bi bi-file-earmark-text"></i>Келісімшарт</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Атырау</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>5+ жыл</span>
+    </div>
+    <div class="job-salary grad-text">900 000 – 1 400 000 ₸</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 20 күн бұрын</span>
+      <span><i class="bi bi-people"></i> 0 өтініш</span>
+    </div>
+  </article>
+
+  <article class="card spotlight job reveal" data-id="12" data-city="Алматы" data-type="part_time"
+    data-exp="junior" data-company="4" data-created="1791388484"
+    data-sal-hi="350000" data-sal-lo="350000"
+    data-title="Медбике-кеңесші (онлайн)" data-search="медбике-кеңесші (онлайн) медсестра-консультант (онлайн) altyn health командасы «медбике-кеңесші (онлайн)» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда altyn health ищет специалиста на позицию «медсестра-консультант (онлайн)». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. altyn health">
+    <div class="job-head">
+      <span class="logo " style="--h: 70">AH</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="12/">Медбике-кеңесші (онлайн)</a></h3>
+        <div class="job-company">Altyn Health</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-part_time"><i class="bi bi-hourglass-split"></i>Толық емес күн</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Алматы</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>1–3 жыл</span>
+    </div>
+    <div class="job-salary grad-text">350 000 ₸-ге дейін</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 22 күн бұрын</span>
+      <span><i class="bi bi-people"></i> 0 өтініш</span>
+    </div>
+  </article>
+
+  <article class="card spotlight job reveal" data-id="13" data-city="Шымкент" data-type="remote"
+    data-exp="junior" data-company="5" data-created="1791258884"
+    data-sal-hi="400000" data-sal-lo="280000"
+    data-title="SMM маманы" data-search="smm маманы smm-специалист eduqaz командасы «smm маманы» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда eduqaz ищет специалиста на позицию «smm-специалист». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. eduqaz">
+    <div class="job-head">
+      <span class="logo " style="--h: 82">E</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="13/">SMM маманы</a></h3>
+        <div class="job-company">EduQaz</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-remote"><i class="bi bi-wifi"></i>Қашықтан</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Шымкент</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>1–3 жыл</span>
+    </div>
+    <div class="job-salary grad-text">280 000 – 400 000 ₸</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 24 күн бұрын</span>
+      <span><i class="bi bi-people"></i> 1 өтініш</span>
+    </div>
+  </article>
+
+  <article class="card spotlight job reveal" data-id="14" data-city="Қарағанды" data-type="full_time"
+    data-exp="none" data-company="3" data-created="1791089684"
+    data-sal-hi="420000" data-sal-lo="320000"
+    data-title="Жүргізуші-экспедитор" data-search="жүргізуші-экспедитор водитель-экспедитор nomad logistics командасы «жүргізуші-экспедитор» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда nomad logistics ищет специалиста на позицию «водитель-экспедитор». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. nomad logistics">
+    <div class="job-head">
+      <span class="logo " style="--h: 104">NL</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="14/">Жүргізуші-экспедитор</a></h3>
+        <div class="job-company">Nomad Logistics</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-full_time"><i class="bi bi-clock"></i>Толық күн</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Қарағанды</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>Тәжірибесіз</span>
+    </div>
+    <div class="job-salary grad-text">320 000 – 420 000 ₸</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 26 күн бұрын</span>
+      <span><i class="bi bi-people"></i> 0 өтініш</span>
+    </div>
+  </article>
+
+  <article class="card spotlight job reveal" data-id="15" data-city="Атырау" data-type="full_time"
+    data-exp="middle" data-company="6" data-created="1790909684"
+    data-sal-hi="0" data-sal-lo="0"
+    data-title="Project Manager" data-search="project manager project manager baiterek energy командасы «project manager» лауазымына маман іздейді. сізді заманауи жұмыс орны, икемді кесте, кәсіби даму бюджеті және достық ұжым күтеді. біз нәтижеге бағытталған, жаңа нәрсе үйренуден қорықпайтын адамдарды бағалаймыз. команда baiterek energy ищет специалиста на позицию «project manager». вас ждут современное рабочее место, гибкий график, бюджет на профессиональное развитие и дружный коллектив. мы ценим людей, нацеленных на результат и не боящихся учиться новому. baiterek energy">
+    <div class="job-head">
+      <span class="logo " style="--h: 269">BE</span>
+      <div style="flex:1;min-width:0">
+        <h3 class="job-title"><a href="15/">Project Manager</a></h3>
+        <div class="job-company">Baiterek Energy</div>
+      </div>
+      
+  
+
+    </div>
+    <div class="tags">
+      
+  
+  <span class="tag t-full_time"><i class="bi bi-clock"></i>Толық күн</span>
+
+      <span class="tag"><i class="bi bi-geo-alt"></i>Атырау</span>
+      <span class="tag"><i class="bi bi-bar-chart"></i>3–5 жыл</span>
+    </div>
+    <div class="job-salary muted">Келісім бойынша</div>
+    <div class="job-foot">
+      <span><i class="bi bi-clock-history"></i> 28 күн бұрын</span>
+      <span><i class="bi bi-people"></i> 2 өтініш</span>
+    </div>
+  </article>
+
+          </div>
+          
+  
+
+        
+      </section>
+    </div>
+</div>
+
+  </main>
+
+  
+  <footer class="footer">
+    <div class="container">
+      <div class="brand">
+        <span class="brand-mark"><i class="bi bi-briefcase-fill"></i></span>
+        <span>JumysBoard<small>© 2026 · Flask оқу жобасы</small></span>
+      </div>
+      <div class="footer-links">
+        <a href="./">Вакансиялар</a>
+        <a href="../companies/">Компаниялар</a>
+        <a href="../api/vacancies.json">API</a>
+      </div>
+    </div>
+  </footer>
+  
+
+  <button class="icon-btn to-top" type="button" aria-label="Жоғарыға"><i class="bi bi-arrow-up"></i></button>
+
+  <div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="backdrop" data-close-modal></div>
+    <div class="box">
+      <div class="m-ico"><i class="bi bi-trash3"></i></div>
+      <h3 id="confirmTitle">Сенімдісіз бе?</h3>
+      <p class="muted" id="confirmText"></p>
+      <div class="m-actions">
+        <button class="btn" type="button" data-close-modal>Болдырмау</button>
+        <button class="btn btn-danger" type="button" id="confirmYes" style="background:var(--danger);color:#fff;border-color:var(--danger)">Иә, растаймын</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../static/js/main.js"></script>
+  
+<script src="../static/js/static.js"></script>
+</body>
+</html>

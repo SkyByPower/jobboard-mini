@@ -35,9 +35,9 @@ def index():
 @bp.route("/vacancies")
 def vacancies():
     page = request.args.get("page", 1, type=int)
-    pagination = filter_vacancies(request.args).paginate(
-        page=page, per_page=current_app.config["VACANCIES_PER_PAGE"], error_out=False
-    )
+    # статикалық көшірмеде барлық карточка беріледі, сүзгі мен беттеуді static.js жасайды
+    per_page = 1000 if current_app.config["STATIC_EXPORT"] else current_app.config["VACANCIES_PER_PAGE"]
+    pagination = filter_vacancies(request.args).paginate(page=page, per_page=per_page, error_out=False)
     return render_template(
         "main/vacancies.html",
         pagination=pagination,

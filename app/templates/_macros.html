@@ -61,7 +61,11 @@
 
 {# ---------------------------------------------------------------- вакансия карточкасы #}
 {% macro vacancy_card(v) %}
-  <article class="card spotlight job reveal">
+  <article class="card spotlight job reveal"
+    {%- if config.STATIC_EXPORT %} data-id="{{ v.id }}" data-city="{{ v.city }}" data-type="{{ v.employment_type }}"
+    data-exp="{{ v.experience }}" data-company="{{ v.company_id }}" data-created="{{ v.created_at.timestamp()|int }}"
+    data-sal-hi="{{ v.salary_max or v.salary_min or 0 }}" data-sal-lo="{{ v.salary_min or v.salary_max or 0 }}"
+    data-title="{{ v.title }}" data-search="{{ [v.title, v.title_ru, v.description, v.description_ru, v.company.name]|select|join(' ')|lower }}"{% endif %}>
     <div class="job-head">
       {{ logo(v.company) }}
       <div style="flex:1;min-width:0">

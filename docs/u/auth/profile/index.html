@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Профиль · JumysBoard</title>
+  <meta name="description" content="JumysBoard — Job Board Mini: вакансиялар, компаниялар және онлайн өтініштер.">
+  <script>
+    /* тема жыпылықтамау үшін бет салынбай тұрып қойылады */
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem("theme"); } catch (e) {}
+      if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+    window.I18N = {"\u0415\u0448\u0442\u0435\u04a3\u0435 \u0442\u0430\u0431\u044b\u043b\u043c\u0430\u0434\u044b": "\u0415\u0448\u0442\u0435\u04a3\u0435 \u0442\u0430\u0431\u044b\u043b\u043c\u0430\u0434\u044b", "\u0416\u0430\u0431\u0443": "\u0416\u0430\u0431\u0443", "\u041a\u04e9\u0448\u0456\u0440\u0443 \u043c\u04af\u043c\u043a\u0456\u043d \u0431\u043e\u043b\u043c\u0430\u0434\u044b": "\u041a\u04e9\u0448\u0456\u0440\u0443 \u043c\u04af\u043c\u043a\u0456\u043d \u0431\u043e\u043b\u043c\u0430\u0434\u044b", "\u041a\u04e9\u0448\u0456\u0440\u0456\u043b\u0434\u0456!": "\u041a\u04e9\u0448\u0456\u0440\u0456\u043b\u0434\u0456!", "\u0421\u0430\u049b\u0442\u0430\u043b\u0493\u0430\u043d\u0434\u0430\u0440\u0434\u0430\u043d \u0430\u043b\u044b\u043d\u0434\u044b": "\u0421\u0430\u049b\u0442\u0430\u043b\u0493\u0430\u043d\u0434\u0430\u0440\u0434\u0430\u043d \u0430\u043b\u044b\u043d\u0434\u044b", "\u0421\u0430\u049b\u0442\u0430\u043b\u0493\u0430\u043d\u0434\u0430\u0440\u0493\u0430 \u049b\u043e\u0441\u044b\u043b\u0434\u044b": "\u0421\u0430\u049b\u0442\u0430\u043b\u0493\u0430\u043d\u0434\u0430\u0440\u0493\u0430 \u049b\u043e\u0441\u044b\u043b\u0434\u044b", "\u0421\u0435\u043d\u0456\u043c\u0434\u0456\u0441\u0456\u0437 \u0431\u0435?": "\u0421\u0435\u043d\u0456\u043c\u0434\u0456\u0441\u0456\u0437 \u0431\u0435?", "\u0421\u04af\u0437\u0433\u0456 \u0448\u0430\u0440\u0442\u0442\u0430\u0440\u044b\u043d \u04e9\u0437\u0433\u0435\u0440\u0442\u0456\u043f \u043a\u04e9\u0440\u0456\u04a3\u0456\u0437.": "\u0421\u04af\u0437\u0433\u0456 \u0448\u0430\u0440\u0442\u0442\u0430\u0440\u044b\u043d \u04e9\u0437\u0433\u0435\u0440\u0442\u0456\u043f \u043a\u04e9\u0440\u0456\u04a3\u0456\u0437.", "\u0421\u04af\u0437\u0433\u0456\u043d\u0456 \u0442\u0430\u0437\u0430\u043b\u0430\u0443": "\u0421\u04af\u0437\u0433\u0456\u043d\u0456 \u0442\u0430\u0437\u0430\u043b\u0430\u0443", "\u0422\u0435\u043a PDF \u0444\u0430\u0439\u043b\u0434\u0430\u0440 \u0440\u04b1\u049b\u0441\u0430\u0442 \u0435\u0442\u0456\u043b\u0435\u0434\u0456.": "\u0422\u0435\u043a PDF \u0444\u0430\u0439\u043b\u0434\u0430\u0440 \u0440\u04b1\u049b\u0441\u0430\u0442 \u0435\u0442\u0456\u043b\u0435\u0434\u0456.", "\u0424\u0430\u0439\u043b {mb} \u041c\u0411-\u0442\u0430\u043d \u0430\u0441\u043f\u0430\u0443\u044b \u043a\u0435\u0440\u0435\u043a.": "\u0424\u0430\u0439\u043b {mb} \u041c\u0411-\u0442\u0430\u043d \u0430\u0441\u043f\u0430\u0443\u044b \u043a\u0435\u0440\u0435\u043a.", "\u049a\u0430\u0442\u0435 \u043e\u0440\u044b\u043d \u0430\u043b\u0434\u044b, \u049b\u0430\u0439\u0442\u0430\u043b\u0430\u043f \u043a\u04e9\u0440\u0456\u04a3\u0456\u0437.": "\u049a\u0430\u0442\u0435 \u043e\u0440\u044b\u043d \u0430\u043b\u0434\u044b, \u049b\u0430\u0439\u0442\u0430\u043b\u0430\u043f \u043a\u04e9\u0440\u0456\u04a3\u0456\u0437."};
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Unbounded:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../../../static/css/style.css">
+  <link rel="icon" href="../../../static/img/favicon.svg" type="image/svg+xml">
+<script>window.STATIC_SITE = {"root": "../../../", "lang": "kk", "state": "user", "path": "/auth/profile"};</script>
+</head>
+<body>
+  <div class="scroll-progress"></div>
+  <div class="bg-scene" aria-hidden="true">
+    <div class="grid"></div>
+    <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  </div>
+
+  
+  <header class="nav">
+    <div class="container">
+      <a class="brand" href="../../">
+        <span class="brand-mark"><i class="bi bi-briefcase-fill"></i></span>
+        <span>JumysBoard<small>Job Board Mini</small></span>
+      </a>
+      <nav class="nav-links">
+        <a href="../../" class="">Басты бет</a>
+        <a href="../../vacancies/" class="">Вакансиялар</a>
+        <a href="../../companies/" class="">Компаниялар</a>
+        
+          
+            <a href="../../my/applications/" class="">Өтініштерім</a>
+          
+        
+      </nav>
+      <div class="nav-right">
+        <div class="lang-switch" data-lang="kk" role="group" aria-label="Тіл">
+          <span class="lang-pill" aria-hidden="true"></span>
+          
+            <a href="./" data-code="kk" class="on" hreflang="kk" aria-current="true">ҚАЗ</a>
+          
+            <a href="../../../ru/u/auth/profile/" data-code="ru" class="" hreflang="ru" >РУС</a>
+          
+        </div>
+        <button class="icon-btn theme-toggle" id="themeToggle" type="button" aria-label="Тақырыпты ауыстыру"><i class="bi bi-moon-stars"></i></button>
+        
+          <div class="user-menu">
+            <button class="user-chip" type="button" aria-haspopup="true">
+              <span class="avatar">АС</span>
+              <span class="name">Аружан</span>
+              <i class="bi bi-chevron-down small"></i>
+            </button>
+            <div class="dropdown">
+              <div class="head">
+                <strong>Аружан Серікова</strong>
+                <span class="small muted">aruzhan@mail.kz</span>
+              </div>
+              <div class="sep"></div>
+              <a href="./"><i class="bi bi-person"></i>Профиль</a>
+              
+                <a href="../../my/applications/"><i class="bi bi-send"></i>Менің өтініштерім</a>
+                <a href="../../saved/"><i class="bi bi-heart"></i>Сақталғандар</a>
+              
+              <div class="sep"></div>
+              <form method="post" data-static-action="/auth/logout">
+                <input type="hidden" name="csrf_token" value="IjJhM2ZjNmIxOTQ3ZTFhZDgxNDg1YTc3Yjg2MjE3NDY4OWYzYzJkM2Ui.auRpZw._kSVOLKvm1IODNRLqeZUSbJdCUE">
+                <button type="submit"><i class="bi bi-box-arrow-right"></i>Шығу</button>
+              </form>
+            </div>
+          </div>
+        
+        <button class="icon-btn nav-burger" type="button" aria-label="Мәзір"><i class="bi bi-list"></i></button>
+      </div>
+    </div>
+  </header>
+
+  
+    <div class="toasts" aria-live="polite">
+      
+    </div>
+  
+
+  <main class="page-enter ">
+    
+<div class="container" style="padding:34px 0 60px">
+  <div class="card reveal" style="margin-bottom:22px">
+    <div class="profile-head">
+      <span class="avatar lg">АС</span>
+      <div style="flex:1;min-width:200px">
+        <h1 style="font-size:1.7rem;margin-bottom:4px">Аружан Серікова</h1>
+        <span class="badge role-user">Пайдаланушы</span>
+        <span class="small muted" style="margin-left:8px">@aruzhan · 30.10.2026 бастап</span>
+      </div>
+      
+        <a class="btn btn-primary" href="../../my/applications/"><i class="bi bi-send"></i> Өтініштерім</a>
+      
+    </div>
+  </div>
+
+  
+  <div class="stats" data-stagger style="margin-top:0">
+    
+    
+    
+      <a class="stat reveal" style="--c:#f5a524;color:inherit" href="../../my/applications/q-aa8bddd9.html">
+        <div class="ico"><i class="bi bi-hourglass"></i></div>
+        <div class="num" data-count="1">0</div><div class="lbl">Күтуде</div>
+      </a>
+    
+      <a class="stat reveal" style="--c:#3b82f6;color:inherit" href="../../my/applications/q-c82550d2.html">
+        <div class="ico"><i class="bi bi-eye"></i></div>
+        <div class="num" data-count="0">0</div><div class="lbl">Қаралуда</div>
+      </a>
+    
+      <a class="stat reveal" style="--c:#12b981;color:inherit" href="../../my/applications/q-6b1b0607.html">
+        <div class="ico"><i class="bi bi-check2-circle"></i></div>
+        <div class="num" data-count="1">0</div><div class="lbl">Қабылданды</div>
+      </a>
+    
+      <a class="stat reveal" style="--c:#f0466b;color:inherit" href="../../my/applications/q-e9bd98cc.html">
+        <div class="ico"><i class="bi bi-x-circle"></i></div>
+        <div class="num" data-count="1">0</div><div class="lbl">Қабылданбады</div>
+      </a>
+    
+  </div>
+  
+
+  <div class="grid grid-2" style="margin-top:22px" data-stagger>
+    <div class="card reveal">
+      <h3><i class="bi bi-person-vcard"></i> Жеке деректер</h3>
+      <dl class="kv">
+        <dt>Email</dt><dd>aruzhan@mail.kz</dd>
+        <dt>Телефон</dt><dd>+7 701 111 22 33</dd>
+        <dt>Логин</dt><dd>aruzhan</dd>
+        <dt>Рөл</dt><dd>user</dd>
+      </dl>
+    </div>
+    <div class="card reveal">
+      <h3><i class="bi bi-key"></i> API токен</h3>
+      <p class="muted small">REST API-ге сұраныс жіберу үшін <code>X-API-Key</code> тақырыбында қолданыңыз.</p>
+      <div class="token-box">
+        <code class="mono">user-demo-token-1</code>
+        <button class="icon-btn" type="button" data-copy="user-demo-token-1" aria-label="Көшіру"><i class="bi bi-clipboard"></i></button>
+      </div>
+      <form method="post" style="margin-top:14px" data-confirm="Ескі токен жарамсыз болады." data-confirm-title="Жаңа токен жасау керек пе?" data-static-action="/auth/profile/token">
+        <input type="hidden" name="csrf_token" value="IjJhM2ZjNmIxOTQ3ZTFhZDgxNDg1YTc3Yjg2MjE3NDY4OWYzYzJkM2Ui.auRpZw._kSVOLKvm1IODNRLqeZUSbJdCUE">
+        <button class="btn btn-sm" type="submit"><i class="bi bi-arrow-repeat"></i> Жаңарту</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+  </main>
+
+  
+  <footer class="footer">
+    <div class="container">
+      <div class="brand">
+        <span class="brand-mark"><i class="bi bi-briefcase-fill"></i></span>
+        <span>JumysBoard<small>© 2026 · Flask оқу жобасы</small></span>
+      </div>
+      <div class="footer-links">
+        <a href="../../vacancies/">Вакансиялар</a>
+        <a href="../../companies/">Компаниялар</a>
+        <a href="../../api/vacancies.json">API</a>
+      </div>
+    </div>
+  </footer>
+  
+
+  <button class="icon-btn to-top" type="button" aria-label="Жоғарыға"><i class="bi bi-arrow-up"></i></button>
+
+  <div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="backdrop" data-close-modal></div>
+    <div class="box">
+      <div class="m-ico"><i class="bi bi-trash3"></i></div>
+      <h3 id="confirmTitle">Сенімдісіз бе?</h3>
+      <p class="muted" id="confirmText"></p>
+      <div class="m-actions">
+        <button class="btn" type="button" data-close-modal>Болдырмау</button>
+        <button class="btn btn-danger" type="button" id="confirmYes" style="background:var(--danger);color:#fff;border-color:var(--danger)">Иә, растаймын</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../../static/js/main.js"></script>
+  
+<script src="../../../static/js/static.js"></script>
+</body>
+</html>
