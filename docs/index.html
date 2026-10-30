@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="kk" data-lang="kk" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JumysBoard — Job Board Mini</title>
+<meta name="description" content="JumysBoard — Flask негізіндегі вакансиялар тақтасы. Демо бет: скриншоттар, мүмкіндіктер, API, іске қосу нұсқаулығы.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+:root {
+  --bg: #f5f6fb; --bg-soft: #eceef8;
+  --surface: rgba(255,255,255,.78); --surface-solid: #fff; --surface-2: #f2f3fa;
+  --border: rgba(20,22,60,.09); --border-strong: rgba(20,22,60,.16);
+  --text: #12132a; --muted: #5f6385; --faint: #9497b3;
+  --primary: #6c4cff; --primary-2: #9f6bff; --accent: #10c9b4; --warm: #ff7a59; --pink: #ff7aa8;
+  --grad: linear-gradient(120deg, #6c4cff 0%, #9f6bff 45%, #ff7aa8 100%);
+  --grad-cool: linear-gradient(120deg, #6c4cff, #10c9b4);
+  --shadow: 0 10px 30px -12px rgba(40,30,120,.25), 0 2px 6px rgba(18,19,42,.05);
+  --shadow-lg: 0 30px 60px -20px rgba(60,40,160,.35);
+  --radius: 16px; --radius-lg: 24px;
+  --ease: cubic-bezier(.22,1,.36,1); --ease-spring: cubic-bezier(.34,1.56,.64,1);
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Unbounded", "Inter", system-ui, sans-serif;
+  --blob-a: .55;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b0b18; --bg-soft: #11112a;
+    --surface: rgba(24,24,48,.72); --surface-solid: #16162f; --surface-2: #1d1d3c;
+    --border: rgba(255,255,255,.08); --border-strong: rgba(255,255,255,.16);
+    --text: #eeefff; --muted: #a3a6cc; --faint: #6c6f99;
+    --shadow: 0 14px 40px -14px rgba(0,0,0,.7); --shadow-lg: 0 30px 70px -20px rgba(0,0,0,.8);
+    --blob-a: .4; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b0b18; --bg-soft: #11112a;
+  --surface: rgba(24,24,48,.72); --surface-solid: #16162f; --surface-2: #1d1d3c;
+  --border: rgba(255,255,255,.08); --border-strong: rgba(255,255,255,.16);
+  --text: #eeefff; --muted: #a3a6cc; --faint: #6c6f99;
+  --shadow: 0 14px 40px -14px rgba(0,0,0,.7); --shadow-lg: 0 30px 70px -20px rgba(0,0,0,.8);
+  --blob-a: .4; color-scheme: dark;
+}
+
+/* тіл: қазақша / орысша мәтіндер жұбы */
+html[data-lang="kk"] body [lang="ru"], html[data-lang="ru"] body [lang="kk"] { display: none !important; }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; font-family: var(--font); font-size: 15.5px; line-height: 1.6;
+  color: var(--text); background: var(--bg); overflow-x: hidden;
+  transition: background-color .4s var(--ease), color .4s var(--ease);
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+code, pre { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0; letter-spacing: -.01em; }
+.container { width: min(1180px, 100% - 32px); margin-inline: auto; }
+.grad-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.muted { color: var(--muted); }
+
+/* фон */
+.bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.blob { position: absolute; width: 520px; height: 520px; border-radius: 50%; filter: blur(90px); opacity: var(--blob-a); animation: float 22s ease-in-out infinite; }
+.blob.b1 { background: #6c4cff; top: -160px; left: -120px; }
+.blob.b2 { background: #ff7aa8; top: 30%; right: -180px; animation-delay: -7s; }
+.blob.b3 { background: #10c9b4; bottom: -200px; left: 30%; animation-delay: -14s; opacity: calc(var(--blob-a) * .7); }
+.bg::after { content: ""; position: absolute; inset: 0; background-image: radial-gradient(var(--border-strong) 1px, transparent 1px); background-size: 28px 28px; mask-image: linear-gradient(to bottom, #000 0%, transparent 70%); opacity: .5; }
+@keyframes float { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(60px,40px) scale(1.08); } 66% { transform: translate(-40px,70px) scale(.94); } }
+
+/* навбар */
+.nav { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); background: color-mix(in srgb, var(--bg) 70%, transparent); border-bottom: 1px solid var(--border); }
+.nav .container { display: flex; align-items: center; gap: 18px; height: 68px; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; font-size: 18px; }
+.brand img { width: 34px; height: 34px; }
+.nav-links { display: flex; gap: 4px; margin-left: auto; }
+.nav-links a { padding: 8px 12px; border-radius: 10px; color: var(--muted); font-weight: 500; font-size: 14.5px; transition: .25s var(--ease); }
+.nav-links a:hover { color: var(--text); background: var(--surface-2); }
+.tools { display: flex; gap: 8px; align-items: center; }
+.icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); display: grid; place-items: center; cursor: pointer; font-size: 17px; transition: .25s var(--ease); }
+.icon-btn:hover { border-color: var(--primary); transform: translateY(-2px); }
+.lang-switch { position: relative; display: flex; padding: 3px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); }
+.lang-switch button { position: relative; z-index: 1; border: 0; background: none; color: var(--muted); font: 600 12.5px var(--font); padding: 8px 10px; cursor: pointer; border-radius: 9px; transition: color .3s; }
+.lang-switch button[aria-pressed="true"] { color: #fff; }
+.lang-switch .pill { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); border-radius: 9px; background: var(--grad); transition: transform .45s var(--ease-spring); }
+html[data-lang="ru"] .lang-switch .pill { transform: translateX(100%); }
+
+/* батырмалар */
+.btn { display: inline-flex; align-items: center; gap: 9px; padding: 13px 22px; border-radius: 14px; font-weight: 600; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); cursor: pointer; transition: .3s var(--ease); font-size: 15px; position: relative; overflow: hidden; }
+.btn:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.btn-primary { background: var(--grad); color: #fff; border: 0; background-size: 200% 100%; }
+.btn-primary:hover { background-position: 100% 0; box-shadow: 0 16px 34px -12px rgba(108,76,255,.6); }
+
+/* hero */
+.hero { padding: 80px 0 40px; text-align: center; }
+.badge { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-size: 13.5px; color: var(--muted); }
+.badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 0 rgba(16,201,180,.6); animation: ping 2s infinite; }
+@keyframes ping { 70% { box-shadow: 0 0 0 10px rgba(16,201,180,0); } 100% { box-shadow: 0 0 0 0 rgba(16,201,180,0); } }
+.hero h1 { font-size: clamp(34px, 6vw, 68px); margin: 22px auto 18px; max-width: 900px; }
+.hero p.lead { font-size: clamp(16px, 2vw, 19px); color: var(--muted); max-width: 680px; margin: 0 auto 30px; }
+.cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.author { margin-top: 18px; font-size: 14px; color: var(--faint); }
+
+/* браузер жақтауы */
+.frame-wrap { perspective: 1600px; margin: 56px auto 0; max-width: 1040px; }
+.frame { border-radius: 18px; border: 1px solid var(--border-strong); background: var(--surface-solid); box-shadow: var(--shadow-lg); overflow: hidden; transform: rotateX(14deg) scale(.96); transform-origin: top center; transition: transform 1.2s var(--ease); }
+.frame.in { transform: rotateX(0) scale(1); }
+.frame-bar { display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
+.frame-bar i { width: 11px; height: 11px; border-radius: 50%; display: block; }
+.frame-bar i:nth-child(1) { background: #ff5f57; } .frame-bar i:nth-child(2) { background: #febc2e; } .frame-bar i:nth-child(3) { background: #28c840; }
+.frame-bar .url { flex: 1; max-width: 360px; margin: 0 auto; text-align: center; font-size: 12.5px; color: var(--muted); background: var(--bg); border-radius: 8px; padding: 4px 10px; }
+.frame-shot { position: relative; aspect-ratio: 16 / 10; background: var(--bg-soft); }
+.frame-shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; opacity: 0; transition: opacity .7s var(--ease); }
+.frame-shot img.on { opacity: 1; }
+
+/* статистика */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 56px 0 0; }
+.stat { padding: 22px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border); text-align: center; backdrop-filter: blur(10px); }
+.stat b { display: block; font-family: var(--font-display); font-size: 36px; line-height: 1.1; }
+.stat span { color: var(--muted); font-size: 14px; }
+
+/* бөлімдер */
+section.block { padding: 90px 0 10px; scroll-margin-top: 70px; }
+.sec-head { text-align: center; max-width: 720px; margin: 0 auto 40px; }
+.sec-head .kicker { display: inline-block; font-weight: 600; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--primary-2); margin-bottom: 12px; }
+.sec-head h2 { font-size: clamp(26px, 4vw, 40px); margin-bottom: 12px; }
+
+.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.card { position: relative; padding: 24px; border-radius: var(--radius-lg); background: var(--surface); border: 1px solid var(--border); backdrop-filter: blur(10px); transition: transform .4s var(--ease), border-color .4s, box-shadow .4s; overflow: hidden; }
+.card::before { content: ""; position: absolute; inset: 0; background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), rgba(159,107,255,.16), transparent 45%); opacity: 0; transition: opacity .4s; pointer-events: none; }
+.card:hover { transform: translateY(-5px); border-color: color-mix(in srgb, var(--primary) 40%, transparent); box-shadow: var(--shadow); }
+.card:hover::before { opacity: 1; }
+.card .ico { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 21px; color: #fff; background: var(--grad); margin-bottom: 16px; box-shadow: 0 10px 24px -10px rgba(108,76,255,.7); }
+.card:nth-child(3n+2) .ico { background: var(--grad-cool); }
+.card:nth-child(3n) .ico { background: linear-gradient(120deg, #ff7a59, #ff7aa8); }
+.card h3 { font-size: 16.5px; margin-bottom: 8px; }
+.card p { margin: 0; color: var(--muted); font-size: 14.5px; }
+
+/* галерея */
+.tabs { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-bottom: 26px; }
+.tabs button { border: 1px solid var(--border); background: var(--surface); color: var(--muted); padding: 9px 16px; border-radius: 999px; font: 600 14px var(--font); cursor: pointer; transition: .3s var(--ease); }
+.tabs button:hover { color: var(--text); }
+.tabs button.on { background: var(--grad); color: #fff; border-color: transparent; }
+.gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.shot { border-radius: 18px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); cursor: zoom-in; transition: transform .45s var(--ease), box-shadow .45s, opacity .4s; padding: 0; text-align: left; color: inherit; font: inherit; }
+.shot:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+.shot .pic { aspect-ratio: 16 / 10; overflow: hidden; background: var(--bg-soft); }
+.shot img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform .8s var(--ease); }
+.shot:hover img { transform: scale(1.05); }
+.shot .cap { padding: 13px 16px; font-size: 14px; font-weight: 600; display: flex; gap: 8px; align-items: center; }
+.shot .cap i { color: var(--primary-2); }
+.shot.hide { display: none; }
+.shot.tall .pic { aspect-ratio: 16 / 10; }
+.shot.tall img { object-fit: contain; object-position: center; }
+
+/* lightbox */
+.lb { position: fixed; inset: 0; z-index: 100; background: rgba(6,6,16,.86); backdrop-filter: blur(8px); display: grid; place-items: center; padding: 60px 16px 70px; opacity: 0; visibility: hidden; transition: .35s var(--ease); }
+.lb.open { opacity: 1; visibility: visible; }
+.lb img { max-width: min(1200px, 100%); max-height: calc(100vh - 140px); border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.6); transform: scale(.94); transition: transform .45s var(--ease-spring); }
+.lb.open img { transform: scale(1); }
+.lb .lb-cap { position: absolute; bottom: 22px; left: 0; right: 0; text-align: center; color: #eeefff; font-weight: 600; }
+.lb .lb-btn { position: absolute; width: 48px; height: 48px; border-radius: 50%; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08); color: #fff; font-size: 20px; cursor: pointer; display: grid; place-items: center; transition: .25s; }
+.lb .lb-btn:hover { background: rgba(255,255,255,.18); }
+.lb .close { top: 16px; right: 16px; }
+.lb .prev { left: 16px; top: 50%; transform: translateY(-50%); }
+.lb .next { right: 16px; top: 50%; transform: translateY(-50%); }
+
+/* техстек */
+.stack { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-weight: 500; font-size: 14.5px; transition: .3s var(--ease); }
+.chip:hover { transform: translateY(-3px) rotate(-1deg); border-color: var(--primary); }
+.chip i { color: var(--primary-2); }
+
+/* API кестесі */
+.table-wrap { border-radius: var(--radius-lg); border: 1px solid var(--border); background: var(--surface); overflow-x: auto; backdrop-filter: blur(10px); }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 560px; }
+th, td { padding: 13px 18px; text-align: left; border-bottom: 1px solid var(--border); }
+th { color: var(--muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+tr:last-child td { border-bottom: 0; }
+tbody tr { transition: background .25s; }
+tbody tr:hover { background: var(--surface-2); }
+.m { display: inline-block; min-width: 64px; text-align: center; padding: 3px 9px; border-radius: 8px; font: 700 12px ui-monospace, Consolas, monospace; }
+.m.get { background: rgba(18,185,129,.15); color: #12b981; } .m.post { background: rgba(59,130,246,.15); color: #3b82f6; }
+.m.put { background: rgba(245,165,36,.16); color: #e09412; } .m.del { background: rgba(240,70,107,.15); color: #f0466b; }
+td code { font-size: 13.5px; }
+
+/* іске қосу */
+.run-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; align-items: start; }
+.run-grid > *, .step { min-width: 0; }
+.steps { counter-reset: s; display: grid; gap: 12px; }
+.step { position: relative; padding: 18px 18px 18px 64px; border-radius: 18px; border: 1px solid var(--border); background: var(--surface); }
+.step::before { counter-increment: s; content: counter(s); position: absolute; left: 18px; top: 18px; width: 30px; height: 30px; border-radius: 10px; background: var(--grad); color: #fff; display: grid; place-items: center; font: 700 14px var(--font-display); }
+.step h3 { font-size: 15px; margin-bottom: 8px; }
+.code { position: relative; margin: 0; padding: 12px 46px 12px 14px; border-radius: 12px; background: #0f0f22; color: #d9dbff; font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; border: 1px solid rgba(255,255,255,.08); }
+.copy { position: absolute; top: 7px; right: 7px; width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.06); color: #d9dbff; cursor: pointer; display: grid; place-items: center; transition: .2s; }
+.copy:hover { background: rgba(255,255,255,.16); }
+.copy.ok { color: #10c9b4; }
+.accounts .row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.accounts .row:last-child { border-bottom: 0; }
+.avatar { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-weight: 700; color: #fff; background: var(--grad); flex: none; }
+.accounts .row:nth-child(n+3) .avatar { background: var(--grad-cool); }
+.accounts small { color: var(--muted); display: block; }
+.role { margin-left: auto; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
+.note { margin-top: 16px; padding: 14px 16px; border-radius: 14px; background: color-mix(in srgb, var(--primary) 10%, transparent); border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent); font-size: 14px; display: flex; gap: 10px; }
+.note i { color: var(--primary-2); font-size: 18px; }
+
+/* демо сценарий */
+.timeline { position: relative; max-width: 780px; margin: 0 auto; padding-left: 34px; }
+.timeline::before { content: ""; position: absolute; left: 11px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--primary), var(--pink), var(--accent)); border-radius: 2px; }
+.tl { position: relative; padding: 0 0 26px; }
+.tl::before { content: ""; position: absolute; left: -29px; top: 5px; width: 14px; height: 14px; border-radius: 50%; background: var(--bg); border: 3px solid var(--primary-2); }
+.tl .time { font: 600 12.5px ui-monospace, Consolas, monospace; color: var(--primary-2); }
+.tl h3 { font-size: 16px; margin: 4px 0 6px; }
+.tl p { margin: 0; color: var(--muted); font-size: 14.5px; }
+
+/* футер */
+footer { margin-top: 90px; padding: 34px 0; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
+footer .container { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; }
+
+/* reveal */
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s var(--ease), transform .8s var(--ease); transition-delay: calc(var(--i, 0) * 70ms); }
+.reveal.in { opacity: 1; transform: none; }
+
+@media (max-width: 980px) {
+  .features, .gallery { grid-template-columns: repeat(2, 1fr); }
+  .run-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .tools { margin-left: auto; }
+}
+@media (max-width: 640px) {
+  .features, .gallery { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .hero { padding-top: 54px; }
+  .brand span { display: none; }
+  .frame-wrap { margin-top: 40px; }
+  .btn { padding: 12px 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+  .frame { transform: none; }
+}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<header class="nav">
+  <div class="container">
+    <a class="brand" href="#top"><img src="favicon.svg" alt=""><span>JumysBoard</span></a>
+    <nav class="nav-links">
+      <a href="#features"><span lang="kk">Мүмкіндіктер</span><span lang="ru">Возможности</span></a>
+      <a href="#screens"><span lang="kk">Скриншоттар</span><span lang="ru">Скриншоты</span></a>
+      <a href="#api">API</a>
+      <a href="#run"><span lang="kk">Іске қосу</span><span lang="ru">Запуск</span></a>
+      <a href="#demo"><span lang="kk">Демо сценарий</span><span lang="ru">Демо-сценарий</span></a>
+    </nav>
+    <div class="tools">
+      <div class="lang-switch" role="group" aria-label="Тіл / Язык">
+        <span class="pill"></span>
+        <button type="button" data-set-lang="kk" aria-pressed="true">ҚАЗ</button>
+        <button type="button" data-set-lang="ru" aria-pressed="false">РУС</button>
+      </div>
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Тақырып / Тема"><i class="bi bi-sun"></i></button>
+      <a class="icon-btn" href="https://github.com/SkyByPower/jobboard-mini" aria-label="GitHub"><i class="bi bi-github"></i></a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero container">
+    <div class="badge reveal"><span class="dot"></span>
+      <span lang="kk">Flask · 2 тіл · анимациялы дизайн</span><span lang="ru">Flask · 2 языка · дизайн с анимациями</span>
+    </div>
+    <h1 class="reveal" style="--i:1">
+      <span lang="kk">Job Board Mini — <span class="grad-text">вакансиялар тақтасы</span></span>
+      <span lang="ru">Job Board Mini — <span class="grad-text">доска вакансий</span></span>
+    </h1>
+    <p class="lead reveal" style="--i:2">
+      <span lang="kk">Компаниялар вакансия жариялайды, пайдаланушылар PDF түйіндеме жүктеп өтініш жібереді, әкімші өтініштерді қарап шешім шығарады.</span>
+      <span lang="ru">Компании публикуют вакансии, пользователи откликаются с PDF-резюме, администратор рассматривает отклики и выносит решение.</span>
+    </p>
+    <div class="cta reveal" style="--i:3">
+      <a class="btn btn-primary" href="https://github.com/SkyByPower/jobboard-mini"><i class="bi bi-github"></i> <span lang="kk">Кодты қарау</span><span lang="ru">Смотреть код</span></a>
+      <a class="btn" href="#screens"><i class="bi bi-images"></i> <span lang="kk">Скриншоттар</span><span lang="ru">Скриншоты</span></a>
+      <a class="btn" href="#run"><i class="bi bi-terminal"></i> <span lang="kk">Іске қосу</span><span lang="ru">Запустить</span></a>
+    </div>
+    <div class="author reveal" style="--i:4"><span lang="kk">Орындаған:</span><span lang="ru">Выполнил:</span> И. Нұрсұлтан</div>
+
+    <div class="frame-wrap">
+      <div class="frame" id="heroFrame">
+        <div class="frame-bar"><i></i><i></i><i></i><div class="url">localhost:5000</div></div>
+        <div class="frame-shot">
+          <img src="screenshots/01-home.png" data-hero="kk-dark" class="on" alt="JumysBoard басты беті">
+          <img src="screenshots/02-home-light.png" data-hero="kk-light" alt="JumysBoard басты беті, ашық тақырып">
+          <img src="screenshots/14-russian-home.png" data-hero="ru" alt="JumysBoard главная страница">
+        </div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat reveal"><b class="grad-text" data-count="5">0</b><span lang="kk">ДҚ кестесі</span><span lang="ru">таблиц в БД</span></div>
+      <div class="stat reveal" style="--i:1"><b class="grad-text" data-count="8">0</b><span lang="kk">API endpoint</span><span lang="ru">API-эндпоинтов</span></div>
+      <div class="stat reveal" style="--i:2"><b class="grad-text" data-count="23">0</b><span lang="kk">pytest тесті</span><span lang="ru">тестов pytest</span></div>
+      <div class="stat reveal" style="--i:3"><b class="grad-text" data-count="2">0</b><span lang="kk">тіл: ҚАЗ / РУС</span><span lang="ru">языка: КАЗ / РУС</span></div>
+    </div>
+  </section>
+
+  <section class="block container" id="features">
+    <div class="sec-head reveal">
+      <span class="kicker"><span lang="kk">Талаптар</span><span lang="ru">Требования</span></span>
+      <h2><span lang="kk">Не <span class="grad-text">істей алады</span></span><span lang="ru">Что <span class="grad-text">умеет</span></span></h2>
+      <p class="muted"><span lang="kk">Тапсырманың барлық міндетті талаптары орындалған.</span><span lang="ru">Выполнены все обязательные требования задания.</span></p>
+    </div>
+    <div class="features">
+      <div class="card reveal"><div class="ico"><i class="bi bi-person-lock"></i></div>
+        <h3><span lang="kk">Тіркелу және рөлдер</span><span lang="ru">Регистрация и роли</span></h3>
+        <p><span lang="kk">Тіркелу, кіру, шығу (Flask-Login). Екі рөл: admin және user, әкімші бөлімі толық жабық.</span><span lang="ru">Регистрация, вход, выход (Flask-Login). Две роли: admin и user, админ-раздел полностью закрыт.</span></p></div>
+      <div class="card reveal" style="--i:1"><div class="ico"><i class="bi bi-diagram-3"></i></div>
+        <h3><span lang="kk">Байланысқан кестелер</span><span lang="ru">Связанные таблицы</span></h3>
+        <p><span lang="kk">Company → Vacancy → Application (1–көп), User ⇄ Vacancy сақталғандар (көп–көп).</span><span lang="ru">Company → Vacancy → Application (один ко многим), User ⇄ Vacancy избранное (многие ко многим).</span></p></div>
+      <div class="card reveal" style="--i:2"><div class="ico"><i class="bi bi-pencil-square"></i></div>
+        <h3><span lang="kk">Толық CRUD</span><span lang="ru">Полный CRUD</span></h3>
+        <p><span lang="kk">Вакансиялар мен компанияларды қосу, өңдеу, өшіру. Өтініштерді жіберу, қарау, мәртебе беру.</span><span lang="ru">Создание, редактирование и удаление вакансий и компаний. Отправка, просмотр и смена статуса откликов.</span></p></div>
+      <div class="card reveal"><div class="ico"><i class="bi bi-funnel"></i></div>
+        <h3><span lang="kk">Іздеу, сүзгі, сұрыптау</span><span lang="ru">Поиск, фильтры, сортировка</span></h3>
+        <p><span lang="kk">Мәтін, қала, жұмыс түрі, тәжірибе, компания, жалақы бойынша. 5 түрлі сұрыптау және пагинация.</span><span lang="ru">По тексту, городу, типу занятости, опыту, компании и зарплате. 5 видов сортировки и пагинация.</span></p></div>
+      <div class="card reveal" style="--i:1"><div class="ico"><i class="bi bi-file-earmark-pdf"></i></div>
+        <h3><span lang="kk">Қауіпсіз CV жүктеу</span><span lang="ru">Безопасная загрузка CV</span></h3>
+        <p><span lang="kk">Тек PDF: кеңейтім мен %PDF- байттары тексеріледі, UUID атау, 5 МБ шек, файлды тек иесі мен әкімші ашады.</span><span lang="ru">Только PDF: проверка расширения и байтов %PDF-, имя UUID, лимит 5 МБ, файл видят только владелец и админ.</span></p></div>
+      <div class="card reveal" style="--i:2"><div class="ico"><i class="bi bi-ui-checks"></i></div>
+        <h3><span lang="kk">Форма валидациясы</span><span lang="ru">Валидация форм</span></h3>
+        <p><span lang="kk">Міндетті өрістер, email, телефон, жалақы диапазоны, бірегейлік, CSRF қорғанысы.</span><span lang="ru">Обязательные поля, email, телефон, диапазон зарплаты, уникальность, защита CSRF.</span></p></div>
+      <div class="card reveal"><div class="ico"><i class="bi bi-plug"></i></div>
+        <h3>REST API</h3>
+        <p><span lang="kk">8 endpoint: GET, POST, PUT, DELETE. X-API-Key токені, JSON қателері, Postman коллекциясы.</span><span lang="ru">8 эндпоинтов: GET, POST, PUT, DELETE. Токен X-API-Key, ошибки в JSON, коллекция Postman.</span></p></div>
+      <div class="card reveal" style="--i:1"><div class="ico"><i class="bi bi-exclamation-octagon"></i></div>
+        <h3><span lang="kk">Қате беттері</span><span lang="ru">Страницы ошибок</span></h3>
+        <p><span lang="kk">400, 403, 404, 413, 500 үшін анимациялы жеке беттер.</span><span lang="ru">Собственные анимированные страницы для 400, 403, 404, 413 и 500.</span></p></div>
+      <div class="card reveal" style="--i:2"><div class="ico"><i class="bi bi-translate"></i></div>
+        <h3><span lang="kk">Екі тіл және тақырып</span><span lang="ru">Два языка и темы</span></h3>
+        <p><span lang="kk">Интерфейс пен мазмұн қазақша және орысша. Қараңғы және ашық тақырып, мобильді нұсқа.</span><span lang="ru">Интерфейс и контент на казахском и русском. Тёмная и светлая тема, мобильная версия.</span></p></div>
+    </div>
+  </section>
+
+  <section class="block container" id="screens">
+    <div class="sec-head reveal">
+      <span class="kicker"><span lang="kk">Галерея</span><span lang="ru">Галерея</span></span>
+      <h2><span lang="kk">Жоба <span class="grad-text">скриншоттары</span></span><span lang="ru">Скриншоты <span class="grad-text">проекта</span></span></h2>
+      <p class="muted"><span lang="kk">Суретті басып, үлкейтіп көріңіз. Көрсеткілермен ауыстыруға болады.</span><span lang="ru">Нажмите на картинку, чтобы увеличить. Листать можно стрелками.</span></p>
+    </div>
+    <div class="tabs reveal" role="tablist">
+      <button type="button" class="on" data-filter="all"><span lang="kk">Барлығы</span><span lang="ru">Все</span></button>
+      <button type="button" data-filter="user"><span lang="kk">Пайдаланушы</span><span lang="ru">Пользователь</span></button>
+      <button type="button" data-filter="admin"><span lang="kk">Әкімші</span><span lang="ru">Администратор</span></button>
+      <button type="button" data-filter="other"><span lang="kk">Дизайн және тіл</span><span lang="ru">Дизайн и язык</span></button>
+    </div>
+    <div class="gallery" id="gallery">
+      <button class="shot reveal" data-cat="user" data-src="screenshots/01-home.png"><div class="pic"><img loading="lazy" src="screenshots/01-home.png" alt=""></div><div class="cap"><i class="bi bi-house"></i><span lang="kk">Басты бет</span><span lang="ru">Главная страница</span></div></button>
+      <button class="shot reveal" data-cat="user" data-src="screenshots/03-vacancies-search-filter.png"><div class="pic"><img loading="lazy" src="screenshots/03-vacancies-search-filter.png" alt=""></div><div class="cap"><i class="bi bi-search"></i><span lang="kk">Іздеу, сүзгі, сұрыптау</span><span lang="ru">Поиск, фильтры, сортировка</span></div></button>
+      <button class="shot reveal" data-cat="user" data-src="screenshots/04-vacancy-detail-apply.png"><div class="pic"><img loading="lazy" src="screenshots/04-vacancy-detail-apply.png" alt=""></div><div class="cap"><i class="bi bi-file-earmark-arrow-up"></i><span lang="kk">Вакансия және CV жүктеу</span><span lang="ru">Вакансия и загрузка CV</span></div></button>
+      <button class="shot reveal" data-cat="user" data-src="screenshots/05-register-validation.png"><div class="pic"><img loading="lazy" src="screenshots/05-register-validation.png" alt=""></div><div class="cap"><i class="bi bi-ui-checks"></i><span lang="kk">Тіркелу валидациясы</span><span lang="ru">Валидация регистрации</span></div></button>
+      <button class="shot reveal" data-cat="user" data-src="screenshots/06-login.png"><div class="pic"><img loading="lazy" src="screenshots/06-login.png" alt=""></div><div class="cap"><i class="bi bi-box-arrow-in-right"></i><span lang="kk">Кіру беті</span><span lang="ru">Страница входа</span></div></button>
+      <button class="shot reveal" data-cat="user" data-src="screenshots/07-my-applications.png"><div class="pic"><img loading="lazy" src="screenshots/07-my-applications.png" alt=""></div><div class="cap"><i class="bi bi-send"></i><span lang="kk">Менің өтініштерім</span><span lang="ru">Мои отклики</span></div></button>
+      <button class="shot reveal" data-cat="admin" data-src="screenshots/08-admin-dashboard.png"><div class="pic"><img loading="lazy" src="screenshots/08-admin-dashboard.png" alt=""></div><div class="cap"><i class="bi bi-speedometer2"></i><span lang="kk">Әкімші тақтасы</span><span lang="ru">Панель администратора</span></div></button>
+      <button class="shot reveal" data-cat="admin" data-src="screenshots/09-admin-vacancies.png"><div class="pic"><img loading="lazy" src="screenshots/09-admin-vacancies.png" alt=""></div><div class="cap"><i class="bi bi-table"></i><span lang="kk">Вакансияларды басқару</span><span lang="ru">Управление вакансиями</span></div></button>
+      <button class="shot reveal" data-cat="admin" data-src="screenshots/09b-delete-confirm-modal.png"><div class="pic"><img loading="lazy" src="screenshots/09b-delete-confirm-modal.png" alt=""></div><div class="cap"><i class="bi bi-trash"></i><span lang="kk">Өшіруді растау</span><span lang="ru">Подтверждение удаления</span></div></button>
+      <button class="shot reveal" data-cat="admin" data-src="screenshots/11-admin-application-review.png"><div class="pic"><img loading="lazy" src="screenshots/11-admin-application-review.png" alt=""></div><div class="cap"><i class="bi bi-clipboard-check"></i><span lang="kk">Өтінішті қарау</span><span lang="ru">Рассмотрение отклика</span></div></button>
+      <button class="shot reveal" data-cat="admin" data-src="screenshots/12-admin-applications-filter.png"><div class="pic"><img loading="lazy" src="screenshots/12-admin-applications-filter.png" alt=""></div><div class="cap"><i class="bi bi-funnel"></i><span lang="kk">Өтініштер сүзгісі</span><span lang="ru">Фильтр откликов</span></div></button>
+      <button class="shot reveal" data-cat="admin" data-src="screenshots/15-russian-admin-dashboard.png"><div class="pic"><img loading="lazy" src="screenshots/15-russian-admin-dashboard.png" alt=""></div><div class="cap"><i class="bi bi-translate"></i><span lang="kk">Әкімші тақтасы орысша</span><span lang="ru">Панель администратора на русском</span></div></button>
+      <button class="shot reveal" data-cat="other" data-src="screenshots/02-home-light.png"><div class="pic"><img loading="lazy" src="screenshots/02-home-light.png" alt=""></div><div class="cap"><i class="bi bi-sun"></i><span lang="kk">Ашық тақырып</span><span lang="ru">Светлая тема</span></div></button>
+      <button class="shot reveal" data-cat="other" data-src="screenshots/14-russian-home.png"><div class="pic"><img loading="lazy" src="screenshots/14-russian-home.png" alt=""></div><div class="cap"><i class="bi bi-translate"></i><span lang="kk">Орысша нұсқа</span><span lang="ru">Русская версия</span></div></button>
+      <button class="shot reveal" data-cat="other" data-src="screenshots/10-404.png"><div class="pic"><img loading="lazy" src="screenshots/10-404.png" alt=""></div><div class="cap"><i class="bi bi-exclamation-octagon"></i><span lang="kk">404 беті</span><span lang="ru">Страница 404</span></div></button>
+      <button class="shot tall reveal" data-cat="other" data-src="screenshots/13-mobile.png"><div class="pic"><img loading="lazy" src="screenshots/13-mobile.png" alt=""></div><div class="cap"><i class="bi bi-phone"></i><span lang="kk">Мобильді нұсқа</span><span lang="ru">Мобильная версия</span></div></button>
+    </div>
+  </section>
+
+  <section class="block container">
+    <div class="sec-head reveal">
+      <span class="kicker"><span lang="kk">Технологиялар</span><span lang="ru">Технологии</span></span>
+      <h2><span lang="kk">Немен <span class="grad-text">жасалған</span></span><span lang="ru">На чём <span class="grad-text">сделано</span></span></h2>
+    </div>
+    <div class="stack reveal">
+      <span class="chip"><i class="bi bi-filetype-py"></i> Python 3.12</span>
+      <span class="chip"><i class="bi bi-cup-hot"></i> Flask 3.1 · Blueprints</span>
+      <span class="chip"><i class="bi bi-database"></i> SQLAlchemy 2 · SQLite</span>
+      <span class="chip"><i class="bi bi-shield-lock"></i> Flask-Login</span>
+      <span class="chip"><i class="bi bi-input-cursor-text"></i> Flask-WTF · CSRF</span>
+      <span class="chip"><i class="bi bi-braces"></i> Jinja2</span>
+      <span class="chip"><i class="bi bi-palette"></i> CSS <span lang="kk">анимациялары</span><span lang="ru">анимации</span></span>
+      <span class="chip"><i class="bi bi-filetype-js"></i> Vanilla JS</span>
+      <span class="chip"><i class="bi bi-check2-circle"></i> pytest</span>
+      <span class="chip"><i class="bi bi-send-check"></i> Postman</span>
+    </div>
+  </section>
+
+  <section class="block container" id="api">
+    <div class="sec-head reveal">
+      <span class="kicker">REST API</span>
+      <h2><span lang="kk">8 <span class="grad-text">endpoint</span></span><span lang="ru">8 <span class="grad-text">эндпоинтов</span></span></h2>
+      <p class="muted"><span lang="kk">Жазу әдістері үшін <code>X-API-Key</code> тақырыбы қажет. Базалық URL: <code>/api</code>.</span><span lang="ru">Для методов записи нужен заголовок <code>X-API-Key</code>. Базовый URL: <code>/api</code>.</span></p>
+    </div>
+    <div class="table-wrap reveal">
+      <table>
+        <thead><tr><th><span lang="kk">Әдіс</span><span lang="ru">Метод</span></th><th>Endpoint</th><th><span lang="kk">Рұқсат</span><span lang="ru">Доступ</span></th><th><span lang="kk">Сипаттама</span><span lang="ru">Описание</span></th></tr></thead>
+        <tbody>
+          <tr><td><span class="m get">GET</span></td><td><code>/vacancies</code></td><td><span lang="kk">баршаға</span><span lang="ru">всем</span></td><td><span lang="kk">Тізім, сүзгі, пагинация</span><span lang="ru">Список, фильтры, пагинация</span></td></tr>
+          <tr><td><span class="m get">GET</span></td><td><code>/vacancies/&lt;id&gt;</code></td><td><span lang="kk">баршаға</span><span lang="ru">всем</span></td><td><span lang="kk">Бір вакансия</span><span lang="ru">Одна вакансия</span></td></tr>
+          <tr><td><span class="m post">POST</span></td><td><code>/vacancies</code></td><td>admin</td><td><span lang="kk">Вакансия құру (422 валидация)</span><span lang="ru">Создание вакансии (422 при ошибке)</span></td></tr>
+          <tr><td><span class="m put">PUT</span></td><td><code>/vacancies/&lt;id&gt;</code></td><td>admin</td><td><span lang="kk">Ішінара жаңарту</span><span lang="ru">Частичное обновление</span></td></tr>
+          <tr><td><span class="m del">DELETE</span></td><td><code>/vacancies/&lt;id&gt;</code></td><td>admin</td><td><span lang="kk">Өшіру (CV файлдарымен бірге)</span><span lang="ru">Удаление (вместе с файлами CV)</span></td></tr>
+          <tr><td><span class="m get">GET</span></td><td><code>/companies</code></td><td><span lang="kk">баршаға</span><span lang="ru">всем</span></td><td><span lang="kk">Компаниялар тізімі</span><span lang="ru">Список компаний</span></td></tr>
+          <tr><td><span class="m get">GET</span></td><td><code>/applications</code></td><td>user / admin</td><td><span lang="kk">Өз өтініштері немесе барлығы</span><span lang="ru">Свои отклики или все</span></td></tr>
+          <tr><td><span class="m put">PUT</span></td><td><code>/applications/&lt;id&gt;/status</code></td><td>admin</td><td><span lang="kk">Мәртебені өзгерту</span><span lang="ru">Смена статуса</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block container" id="run">
+    <div class="sec-head reveal">
+      <span class="kicker"><span lang="kk">Іске қосу</span><span lang="ru">Запуск</span></span>
+      <h2><span lang="kk">Өз компьютеріңізде <span class="grad-text">іске қосыңыз</span></span><span lang="ru">Запустите <span class="grad-text">у себя</span></span></h2>
+      <p class="muted"><span lang="kk">Бұл бет тек көрсетілім. Сайттың өзі Python серверінде жұмыс істейді, сондықтан оны жергілікті түрде іске қосу керек.</span><span lang="ru">Эта страница только витрина. Сам сайт работает на Python-сервере, поэтому его нужно запустить локально.</span></p>
+    </div>
+    <div class="run-grid">
+      <div class="steps">
+        <div class="step reveal"><h3><span lang="kk">Репозиторийді жүктеу</span><span lang="ru">Скачать репозиторий</span></h3>
+<pre class="code">git clone https://github.com/SkyByPower/jobboard-mini.git
+cd jobboard-mini</pre></div>
+        <div class="step reveal" style="--i:1"><h3><span lang="kk">Виртуалды орта және тәуелділіктер</span><span lang="ru">Виртуальное окружение и зависимости</span></h3>
+<pre class="code">python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt</pre></div>
+        <div class="step reveal" style="--i:2"><h3><span lang="kk">.env файлы және демо деректер</span><span lang="ru">Файл .env и демо-данные</span></h3>
+<pre class="code">copy .env.example .env
+flask --app run seed</pre></div>
+        <div class="step reveal" style="--i:3"><h3><span lang="kk">Серверді қосу</span><span lang="ru">Запустить сервер</span></h3>
+<pre class="code">flask --app run run</pre>
+          <p class="muted" style="margin:8px 0 0;font-size:14px"><span lang="kk">Браузерде ашыңыз:</span><span lang="ru">Откройте в браузере:</span> <code>http://127.0.0.1:5000</code></p></div>
+      </div>
+      <div class="card accounts reveal from-right">
+        <h3 style="margin-bottom:6px"><span lang="kk">Тест аккаунттар</span><span lang="ru">Тестовые аккаунты</span></h3>
+        <div class="row"><div class="avatar">A</div><div><b>admin</b><small>admin123</small></div><span class="role"><span lang="kk">Әкімші</span><span lang="ru">Админ</span></span></div>
+        <div class="row"><div class="avatar">АС</div><div><b>aruzhan</b><small>user123</small></div><span class="role">User</span></div>
+        <div class="row"><div class="avatar">ДН</div><div><b>dias</b><small>user123</small></div><span class="role">User</span></div>
+        <div class="row"><div class="avatar">МӘ</div><div><b>madina</b><small>user123</small></div><span class="role">User</span></div>
+        <div class="note"><i class="bi bi-info-circle"></i><span><span lang="kk">Бұл тек демо деректер, <code>flask seed</code> командасы жасайды.</span><span lang="ru">Это только демо-данные, их создаёт команда <code>flask seed</code>.</span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block container" id="demo">
+    <div class="sec-head reveal">
+      <span class="kicker"><span lang="kk">Көрсетілім</span><span lang="ru">Показ</span></span>
+      <h2><span lang="kk">Демо сценарий <span class="grad-text">2–3 минут</span></span><span lang="ru">Демо-сценарий <span class="grad-text">на 2–3 минуты</span></span></h2>
+    </div>
+    <div class="timeline">
+      <div class="tl reveal"><div class="time">0:00 – 0:20</div><h3><span lang="kk">Басты бет</span><span lang="ru">Главная</span></h3><p><span lang="kk">Анимациялар, статистика, тақырып пен тілді ауыстыру.</span><span lang="ru">Анимации, статистика, переключение темы и языка.</span></p></div>
+      <div class="tl reveal"><div class="time">0:20 – 0:45</div><h3><span lang="kk">Іздеу</span><span lang="ru">Поиск</span></h3><p><span lang="kk">«python» іздеу, «Қашықтан» сүзгісі, жалақы бойынша сұрыптау, келесі бет.</span><span lang="ru">Поиск «python», фильтр «Удалённо», сортировка по зарплате, следующая страница.</span></p></div>
+      <div class="tl reveal"><div class="time">0:45 – 1:05</div><h3><span lang="kk">Тіркелу және валидация</span><span lang="ru">Регистрация и валидация</span></h3><p><span lang="kk">Қате email мен қысқа құпиясөз → қателер, содан кейін дұрыс тіркелу.</span><span lang="ru">Неверный email и короткий пароль → ошибки, затем успешная регистрация.</span></p></div>
+      <div class="tl reveal"><div class="time">1:05 – 1:35</div><h3><span lang="kk">Өтініш</span><span lang="ru">Отклик</span></h3><p><span lang="kk">Вакансияны сақтау, .exe жүктеу әрекеті → бас тарту, PDF жүктеп өтініш жіберу.</span><span lang="ru">Добавить вакансию в избранное, попытка загрузить .exe → отказ, отклик с PDF.</span></p></div>
+      <div class="tl reveal"><div class="time">1:35 – 2:20</div><h3><span lang="kk">Әкімші</span><span lang="ru">Администратор</span></h3><p><span lang="kk">Тақта, компания мен вакансия қосу, өңдеу, өшіру; өтінішті қабылдау.</span><span lang="ru">Панель, добавление компании и вакансии, редактирование, удаление; принятие отклика.</span></p></div>
+      <div class="tl reveal"><div class="time">2:20 – 3:00</div><h3><span lang="kk">Нәтиже және API</span><span lang="ru">Результат и API</span></h3><p><span lang="kk">Пайдаланушы мәртебені көреді; Postman: GET, POST (422 және 201), DELETE.</span><span lang="ru">Пользователь видит статус; Postman: GET, POST (422 и 201), DELETE.</span></p></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <span>© 2026 JumysBoard · <span lang="kk">Орындаған:</span><span lang="ru">Выполнил:</span> И. Нұрсұлтан</span>
+    <a class="btn" href="https://github.com/SkyByPower/jobboard-mini"><i class="bi bi-github"></i> SkyByPower/jobboard-mini</a>
+  </div>
+</footer>
+
+<div class="lb" id="lightbox" aria-hidden="true">
+  <img alt="">
+  <div class="lb-cap"></div>
+  <button class="lb-btn close" type="button" aria-label="Жабу"><i class="bi bi-x-lg"></i></button>
+  <button class="lb-btn prev" type="button" aria-label="Алдыңғы"><i class="bi bi-chevron-left"></i></button>
+  <button class="lb-btn next" type="button" aria-label="Келесі"><i class="bi bi-chevron-right"></i></button>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  function store(key, value) {
+    try { if (value === undefined) return localStorage.getItem(key); localStorage.setItem(key, value); } catch (e) { return null; }
+  }
+
+  // тіл
+  function setLang(lang) {
+    root.dataset.lang = lang;
+    root.lang = lang;
+    document.querySelectorAll("[data-set-lang]").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.dataset.setLang === lang ? "true" : "false");
+    });
+    store("lang", lang);
+    updateHero();
+  }
+  document.querySelectorAll("[data-set-lang]").forEach(function (b) {
+    b.addEventListener("click", function () { setLang(b.dataset.setLang); });
+  });
+
+  // тақырып
+  var themeBtn = document.getElementById("themeBtn");
+  function isDark() {
+    if (root.dataset.theme) return root.dataset.theme === "dark";
+    return matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function setTheme(theme) {
+    root.dataset.theme = theme;
+    themeBtn.innerHTML = theme === "dark" ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon-stars"></i>';
+    store("theme", theme);
+    updateHero();
+  }
+  themeBtn.addEventListener("click", function () { setTheme(isDark() ? "light" : "dark"); });
+
+  // hero скриншоты тіл мен тақырыпқа қарай ауысады
+  function updateHero() {
+    var key = root.dataset.lang === "ru" ? "ru" : "kk-" + (isDark() ? "dark" : "light");
+    document.querySelectorAll("[data-hero]").forEach(function (img) {
+      img.classList.toggle("on", img.dataset.hero === key);
+    });
+  }
+
+  setTheme(store("theme") || "dark");
+  setLang(store("lang") === "ru" ? "ru" : "kk");
+
+  // reveal және санауыштар
+  function count(el) {
+    var end = +el.dataset.count, start = performance.now();
+    (function tick(now) {
+      var p = Math.min((now - start) / 1200, 1);
+      el.textContent = Math.round(end * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(tick);
+    })(start);
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.classList.add("in");
+      var n = e.target.querySelector("[data-count]");
+      if (n) count(n);
+      io.unobserve(e.target);
+    });
+  }, { threshold: .15 });
+  document.querySelectorAll(".reveal, .frame").forEach(function (el) { io.observe(el); });
+
+  // карточкалардағы жарық
+  document.querySelectorAll(".card").forEach(function (card) {
+    card.addEventListener("pointermove", function (e) {
+      var r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", e.clientX - r.left + "px");
+      card.style.setProperty("--my", e.clientY - r.top + "px");
+    });
+  });
+
+  // галерея сүзгісі
+  var shots = Array.prototype.slice.call(document.querySelectorAll(".shot"));
+  document.querySelectorAll("[data-filter]").forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      document.querySelectorAll("[data-filter]").forEach(function (t) { t.classList.toggle("on", t === tab); });
+      var f = tab.dataset.filter;
+      shots.forEach(function (s) { s.classList.toggle("hide", f !== "all" && s.dataset.cat !== f); });
+    });
+  });
+
+  // lightbox
+  var lb = document.getElementById("lightbox"), lbImg = lb.querySelector("img"), lbCap = lb.querySelector(".lb-cap"), current = 0;
+  function visible() { return shots.filter(function (s) { return !s.classList.contains("hide"); }); }
+  function show(i) {
+    var list = visible();
+    current = (i + list.length) % list.length;
+    var s = list[current], cap = s.querySelector(".cap [lang='" + root.dataset.lang + "']");
+    lbImg.src = s.dataset.src;
+    lbImg.alt = lbCap.textContent = cap ? cap.textContent : "";
+  }
+  function open(i) { show(i); lb.classList.add("open"); lb.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden"; }
+  function close() { lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; }
+  shots.forEach(function (s) { s.addEventListener("click", function () { open(visible().indexOf(s)); }); });
+  lb.querySelector(".close").addEventListener("click", close);
+  lb.querySelector(".prev").addEventListener("click", function () { show(current - 1); });
+  lb.querySelector(".next").addEventListener("click", function () { show(current + 1); });
+  lb.addEventListener("click", function (e) { if (e.target === lb) close(); });
+  document.addEventListener("keydown", function (e) {
+    if (!lb.classList.contains("open")) return;
+    if (e.key === "Escape") close();
+    if (e.key === "ArrowLeft") show(current - 1);
+    if (e.key === "ArrowRight") show(current + 1);
+  });
+
+  // кодты көшіру
+  document.querySelectorAll(".code").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.type = "button"; btn.className = "copy"; btn.setAttribute("aria-label", "Copy");
+    btn.innerHTML = '<i class="bi bi-clipboard"></i>';
+    btn.addEventListener("click", function () {
+      var text = pre.firstChild.textContent;
+      navigator.clipboard.writeText(text).then(function () {
+        btn.classList.add("ok"); btn.innerHTML = '<i class="bi bi-check2"></i>';
+        setTimeout(function () { btn.classList.remove("ok"); btn.innerHTML = '<i class="bi bi-clipboard"></i>'; }, 1500);
+      });
+    });
+    pre.appendChild(btn);
+  });
+})();
+</script>
+</body>
+</html>
